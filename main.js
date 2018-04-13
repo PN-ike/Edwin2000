@@ -18,6 +18,7 @@ var projectionLocation;
 
 //links to buffer stored on the GPU
 var quadVertexBuffer, quadColorBuffer;
+var bla;
 var cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer;
 
 var quadVertices = new Float32Array([
