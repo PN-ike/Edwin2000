@@ -4,7 +4,7 @@ class Camera {
     this.multiplier = 2;
 
     this.eyex = 0;
-    this.eyey = 1;
+    this.eyey = 0;
     this.eyez = 2;
 
     this.centerx = this.eyex;
