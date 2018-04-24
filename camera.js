@@ -20,17 +20,45 @@ class Camera {
 
     this.left = false;
     this.right = false;
+    this.forward = false;
+    this.back = false;
     this.up = false;
     this.down = false;
-
-    this.moveValueLeft = 0;
-    this.moveValueRight = 0;
-    this.moveValueUp = 0;
-    this.moveValueDown = 0;
 
     this.lookHorizontalValue = 0;
     this.lookVerticalValue = 0;
   }
+
+    moveForward(viewMatrix) {
+      console.log(this.moveValueZ);
+      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, 0.1));
+      this.forward = false;
+      this.moveButton = false;
+      return viewMatrix;
+    }
+
+    moveBack(viewMatrix) {
+      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, -0.1));
+      this.back = false;
+      this.moveButton = false;
+      return viewMatrix;
+    }
+
+    moveLeft(viewMatrix) {
+      console.log("left");
+      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0.1, 0, 0));
+      this.left = false;
+      this.moveButton = false;
+      return viewMatrix;
+    }
+
+    moveRight(viewMatrix) {
+      console.log("right");
+      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(-0.1, 0, 0));
+      this.right = false;
+      this.moveButton = false;
+      return viewMatrix;
+    }
 
 
   lookUp(viewMatrix) {

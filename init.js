@@ -2,26 +2,22 @@
 function initInteraction(canvas) {
   document.addEventListener('keypress', function(event) {
     //listen for key event globally
-    if (event.code === 'KeyR') {
-      camera.movement.x = 0;
-  		camera.movement.y = 0;
-    }
     if(event.code === 'KeyW'){
-      if (centery < 1) {
-        centery+=0.1;
-      }
-      console.log(centery);
+        cam.moveButton = true;
+        cam.forward = true;
     }
-    if(event.code === 'KeyA'){ camera.movement.left++}
     if(event.code === 'KeyS'){
-      if (centery > -1) {
-        centery-=0.1;
-      }
-
-      console.log(centery);
-      }
-    if(event.code === 'KeyD'){ camera.movement.right+= 10}
-
+        cam.moveButton = true;
+        cam.back = true;
+    }
+    if(event.code === 'KeyA'){
+        cam.moveButton = true;
+        cam.left = true;
+    }
+    if(event.code === 'KeyD'){
+        cam.moveButton = true;
+        cam.right = true;
+    }
     if(event.code === 'KeyK'){
       cam.lookButton = true;
       cam.right = true;

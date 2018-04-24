@@ -138,7 +138,7 @@ function render(timeInMilliseconds) {
 
   var sceneMatrix = makeIdentityMatrix();
   //var viewMatrix = calculateViewMatrix(makeIdentityMatrix());
-  var viewMatrix = myTestCameraCalculateViewMatrix(previousViewMatrix);
+  var viewMatrix = calculateViewMatrix(previousViewMatrix);
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
 
   renderQuad(sceneMatrix, viewMatrix);
@@ -152,21 +152,20 @@ function render(timeInMilliseconds) {
   animatedAngle = timeInMilliseconds/10;
 }
 
-function myTestCameraCalculateViewMatrix(viewMatrix) {
-
-  //viewMatrix = matrixMultiply(viewMatrix, lookAt(eyex, eyey, eyez, centerx, centery, centerz, 0, 1, 0));
-
-  //viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, -5));
-
-  //console.log("camMove " + camera.movement.turnR);
-  //console.log("animatedAngle " + animatedAngle);
-  //console.log("movementButtonPressend " + movementButtonPressend);
+function calculateViewMatrix(viewMatrix) {
 
   if (cam.moveButton) {
-    if (cam.right) {}
-
+    if (cam.forward) {
+      viewMatrix = cam.moveForward(viewMatrix);
+    } else if (cam.back) {
+      viewMatrix = cam.moveBack(viewMatrix);
+    } else if (cam.left) {
+      viewMatrix = cam.moveLeft(viewMatrix);
+    } else if (cam.right) {
+      viewMatrix = cam.moveRight(viewMatrix);
+    }
+    previousViewMatrix = viewMatrix;
   }
-
   else if (cam.lookButton) {
     if (cam.right) {
       viewMatrix = cam.lookRight(viewMatrix);
@@ -184,63 +183,6 @@ function myTestCameraCalculateViewMatrix(viewMatrix) {
 
 return viewMatrix;
 }
-/*
-function calculateViewMatrix(viewMatrix) {
-  //compute the camera's matrix
-
-  var animate = (animatedAngle/1000)
-  if (camera.movement.forward != 0) {
-    viewMatrix = previousViewMatrix;
-    viewMatrix =  matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, 0 + camera.movement.forward/50));
-    camera.movement.forward = 0;
-    previousViewMatrix = viewMatrix;
-  } else if (camera.movement.back != 0) {
-    viewMatrix = previousViewMatrix;
-    viewMatrix =  matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, 0 - camera.movement.back/50));
-    camera.movement.back = 0;
-    previousViewMatrix = viewMatrix;
-  } else if (camera.movement.left != 0) {
-    viewMatrix = previousViewMatrix;
-    viewMatrix =  matrixMultiply(viewMatrix, makeTranslationMatrix(0 + camera.movement.left/50, 0, 0 ));
-    camera.movement.left = 0;
-    previousViewMatrix = viewMatrix;
-  } else if (camera.movement.right != 0) {
-    viewMatrix = previousViewMatrix;
-    viewMatrix =  matrixMultiply(viewMatrix, makeTranslationMatrix(0 - camera.movement.right/50, 0, 0 ));
-    camera.movement.right = 0;
-    previousViewMatrix = viewMatrix;
-  } else if (camera.movement.turnR != 0) {
-    viewMatrix = previousViewMatrix;
-    viewMatrix =  matrixMultiply(viewMatrix, makeYRotationMatrix(convertDegreeToRadians(camera.movement.turnR/50)));
-    camera.movement.turnR = 0;
-    previousViewMatrix = viewMatrix;
-  } else {
-      viewMatrix = previousViewMatrix;
-  }
-
-  if (camera.movement.up != 0) {
-    centerx -= camera.movement.up/10;
-    eyey += camera.movement.up/10;
-    camera.movement.up = 0;
-    viewMatrix = lookAt(eyex, eyey, eyez, centerx, centery, centerz, 0, 1, 0);
-    //viewMatrix = matrixMultiply(viewMatrix, makeYRotationMatrix(convertDegreeToRadians(camera.movement.up/10)));
-
-    console.log(centery);
-  } else if (camera.movement.down != 0) {
-    centerx += camera.movement.down/10;
-    eyex -= camera.movement.up/10;
-    camera.movement.down = 0;
-    viewMatrix = lookAt(eyex, eyey, eyez, centerx, centery, centerz, 0, 1, 0);
-    console.log(centery);
-  }else {
-      viewMatrix = lookAt(eyex, eyey, eyez, centerx, centery, centerz, 0, 1, 0);
-      console.log("else");
-  }
-
-  return viewMatrix;
-}
-
-*/
 
 function setUpModelViewMatrix(viewMatrix, sceneMatrix) {
 
