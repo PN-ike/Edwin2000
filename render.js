@@ -154,21 +154,15 @@ function renderPlane() {
   gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
   gl.enableVertexAttribArray(colorLocation);
 
-  // TASK 10-2
-
   // store current sceneMatrix in originSceneMatrix, so it can be restored
   var originSceneMatrix = sceneMatrix;
 
-  // TASK 9 and 10
   sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
   sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, 0, 0));
   sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(1, 0.8, 5));
-
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
-  // TASK 8-3
   renderCube();
 
-  // TASK 10-1
   //left back wing
   sceneMatrix = originSceneMatrix;
   sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(90)));
@@ -223,16 +217,6 @@ function renderPlane() {
   sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(1.5, 0.1, 5));
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
   renderCube();
-
-  //sceneMatrix = originSceneMatrix;
-  //sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
-  //sceneMatrix = matrixMultiply(sceneMatrix, makeZShearMatrix(0, -0.5));
-  //sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, 0.5, 1.5));
-  //setUpModelViewMatrix(viewMatrix, sceneMatrix);
-  //renderCube();
-
-  // TODO  make sphere for cockpit
-  //makeSphere(2, 30, 30);
 }
 
 function renderCube() {
