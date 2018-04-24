@@ -15,7 +15,7 @@ var modelViewLocation;
 var positionLocation;
 var colorLocation;
 var projectionLocation;
-//comment to ty pushing
+//comment to try pushing
 var movementButtonPressend = false;
 
 //links to buffer stored on the GPU
