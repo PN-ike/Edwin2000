@@ -65,7 +65,6 @@ class Camera {
     }
 
     moveRight(viewMatrix) {
-      console.log("right");
       viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(-0.1, 0, 0));
       this.right = false;
       this.moveButton = false;
