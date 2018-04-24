@@ -7,9 +7,9 @@ class Camera {
     this.eyey = 1;
     this.eyez = 2;
 
-    this.centerx = 0;
-    this.centery = 0;
-    this.centerz = 0;
+    this.centerx = this.eyex;
+    this.centery = this.eyey;
+    this.centerz = this.eyez -1;
 
     this.upx = 0;
     this.upy = 1
@@ -79,24 +79,24 @@ class Camera {
   }
 
   lookDown(viewMatrix) {
-    viewMatrix = matrixMultiply(viewMatrix, makeXRotationMatrix(convertDegreeToRadians(this.lookVerticalValue*this.multiplier)));
+    viewMatrix = lookAt(0, 1, 2, );
     this.lookButton = false;
     this.down = false;
     return viewMatrix;
   }
 
   lookLeft(viewMatrix) {
-    viewMatrix = matrixMultiply(viewMatrix, makeYRotationMatrix(convertDegreeToRadians(this.lookHorizontalValue*this.multiplier)));
+    this.centerx -= 0.1;
+    viewMatrix = lookAt(this.eyex, this.eyey, this.eyez, this.centerx, this.centery, this.centerz, 0, 1, 0);
     this.lookButton = false;
     this.left = false;
     return viewMatrix;
   }
 
   lookRight(viewMatrix) {
-    viewMatrix = matrixMultiply(viewMatrix, makeYRotationMatrix(convertDegreeToRadians(this.lookHorizontalValue*this.multiplier)));
+    viewMatrix = matrixMultiply(viewMatrix, makeYRotationMatrix(convertDegreeToRadians(-this.lookHorizontalValue*this.multiplier)));
     this.lookButton = false;
     this.right = false;
     return viewMatrix;
   }
-
 }

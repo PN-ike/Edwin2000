@@ -136,13 +136,14 @@ function render(timeInMilliseconds) {
   gl.uniformMatrix4fv(projectionLocation, false, projectionMatrix);
 
   var sceneMatrix = makeIdentityMatrix();
-  
+
   //var viewMatrix = calculateViewMatrix(makeIdentityMatrix());
   var viewMatrix = calculateViewMatrix(previousViewMatrix);
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
 
   renderQuad(sceneMatrix, viewMatrix);
   renderRobot(sceneMatrix, viewMatrix);
+
   //myTestCameraRenderFunction(sceneMatrix, viewMatrix);
 
   //request another render call as soon as possible
