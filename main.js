@@ -163,6 +163,10 @@ function calculateViewMatrix(viewMatrix) {
       viewMatrix = cam.moveLeft(viewMatrix);
     } else if (cam.right) {
       viewMatrix = cam.moveRight(viewMatrix);
+    } else if (cam.up) {
+      viewMatrix = cam.moveUp(viewMatrix);
+    }else if (cam.down) {
+      viewMatrix = cam.moveDown(viewMatrix);
     }
     previousViewMatrix = viewMatrix;
   }
@@ -187,7 +191,6 @@ return viewMatrix;
 function setUpModelViewMatrix(viewMatrix, sceneMatrix) {
 
   var modelViewMatrix = matrixMultiply(viewMatrix, sceneMatrix );
-
 
   gl.uniformMatrix4fv(modelViewLocation, false, modelViewMatrix);
 }

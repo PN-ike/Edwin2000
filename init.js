@@ -18,6 +18,14 @@ function initInteraction(canvas) {
         cam.moveButton = true;
         cam.right = true;
     }
+    if(event.code === 'KeyE'){
+        cam.moveButton = true;
+        cam.up = true;
+    }
+    if(event.code === 'KeyQ'){
+        cam.moveButton = true;
+        cam.down = true;
+    }
     if(event.code === 'KeyK'){
       cam.lookButton = true;
       cam.right = true;

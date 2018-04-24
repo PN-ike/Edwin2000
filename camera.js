@@ -29,8 +29,21 @@ class Camera {
     this.lookVerticalValue = 0;
   }
 
+    moveUp(viewMatrix) {
+      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, -0.1, 0));
+      this.up = false;
+      this.moveButton = false;
+      return viewMatrix;
+    }
+
+    moveDown(viewMatrix) {
+      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0.1, 0));
+      this.down = false;
+      this.moveButton = false;
+      return viewMatrix;
+    }
+
     moveForward(viewMatrix) {
-      console.log(this.moveValueZ);
       viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, 0.1));
       this.forward = false;
       this.moveButton = false;
@@ -45,7 +58,6 @@ class Camera {
     }
 
     moveLeft(viewMatrix) {
-      console.log("left");
       viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0.1, 0, 0));
       this.left = false;
       this.moveButton = false;
@@ -59,7 +71,6 @@ class Camera {
       this.moveButton = false;
       return viewMatrix;
     }
-
 
   lookUp(viewMatrix) {
     viewMatrix = matrixMultiply(viewMatrix, makeXRotationMatrix(convertDegreeToRadians(this.lookVerticalValue*this.multiplier)));
