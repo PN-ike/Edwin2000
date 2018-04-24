@@ -52,6 +52,33 @@ function makeZRotationMatrix(angleInRadians) {
   ];
 }
 
+function makeXShearMatrix(sy, sz) {
+  return [
+    1, sy, sz, 0,
+    0,  1,  0, 0,
+    0,  0,  1, 0,
+    0,  0,  0, 1
+  ];
+}
+
+function makeYShearMatrix(sx, sz) {
+  return [
+    1,  0,  0, 0,
+    sx, 1, sz, 0,
+    0,  0,  1, 0,
+    0,  0,  0, 1
+  ];
+}
+
+function makeZShearMatrix(sx, sy) {
+  return [
+    1,  0,  0, 0,
+    0,  1,  0, 0,
+    sx, sy, 1, 0,
+    0,  0,  0, 1
+  ];
+}
+
 // Helper function taken from webglfundamentals.org tutorials
 // Note that OpenGL expects the transposed matrix (when compared to slide)
 function makeScaleMatrix(sx, sy, sz) {
