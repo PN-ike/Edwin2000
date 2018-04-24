@@ -37,7 +37,7 @@ var quadColors = new Float32Array([
     0, 0, 1, 1,
     0, 1, 0, 1,
     0, 0, 0, 1]);
-//penis
+
 var s = 0.3; //size of cube
 var cubeVertices = new Float32Array([
    -s,-s,-s, s,-s,-s, s, s,-s, -s, s,-s,
