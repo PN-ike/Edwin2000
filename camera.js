@@ -86,8 +86,17 @@ class Camera {
   }
 
   lookLeft(viewMatrix) {
-    this.centerx -= 0.1;
-    viewMatrix = lookAt(this.eyex, this.eyey, this.eyez, this.centerx, this.centery, this.centerz, 0, 1, 0);
+
+    var v = vec3.fromValues(this.centerx, this.centery, this.centerz);
+
+    v = matrixMultiply(v, makeYRotationMatrix(this.lookHorizontalValue + 0.01))
+    console.log(this.lookHorizontalValue)
+    console.log(v[0])
+    console.log(v[1])
+    console.log(v[2])
+
+
+    viewMatrix = lookAt(this.eyex, this.eyey, this.eyez, v[0], v[1], v[2], 0, 1, 0);
     this.lookButton = false;
     this.left = false;
     return viewMatrix;
