@@ -93,7 +93,6 @@ function init(resources) {
   cam = new Camera();
   previousViewMatrix = lookAt(cam.eyex, cam.eyey, cam.eyez, cam.centerx, cam.centery, cam.centerz, cam.upx, cam.upy, cam.upz);
 
-
   //in WebGL / OpenGL3 we have to create and use our own shaders for the programmable pipeline
   //create the shader program
   shaderProgram = createProgram(gl, resources.vs, resources.fs);
@@ -137,6 +136,7 @@ function render(timeInMilliseconds) {
   gl.uniformMatrix4fv(projectionLocation, false, projectionMatrix);
 
   var sceneMatrix = makeIdentityMatrix();
+
   //var viewMatrix = calculateViewMatrix(makeIdentityMatrix());
   var viewMatrix = calculateViewMatrix(previousViewMatrix);
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
