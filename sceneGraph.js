@@ -11,7 +11,7 @@ function spanSceneGraph() {
 
 function createPlane(rootNode) {
   // TODO create plane transformation matrix
-  var planeTransformationMatrix = makeIdentityMatrix();
+  var planeTransformationMatrix = createPlaneTransformationMatrix();
   var planeTransformationNode = new RenderSGNode(planeTransformationMatrix);
   rootNode.append(planeTransformationNode);
 
@@ -79,6 +79,11 @@ function createPlane(rootNode) {
   );
 }
 
+// TODO implement matrix
+function createPlaneTransformationMatrix() {
+  return makeIdentityMatrix();
+}
+
 function createPlanePart(matrixA, matrixB, matrixC, matrixD, matrixE, matrixF, node) {
   var transformationMatrix = matrixA;
   transformationMatrix = matrixMultiply(transformationMatrix, matrixB);
@@ -93,6 +98,25 @@ function createPlanePart(matrixA, matrixB, matrixC, matrixD, matrixE, matrixF, n
   var cubeNode = new CubeRenderNode();
   transformationNode.append(cubeNode);
 }
+
+// TODO test more generic version of part creater
+//function createNodePart(transformations, bodyNode) {
+//  var transformationMatrix = mat4.create();
+//
+//  for(i = 0; i < transformations.length; i++) {
+//    transformationMatrix = matrixMultiply(transformationMatrix, trnsformations[i]);
+//  }
+//
+//  transformationNode = new TransformationSGNode(transformationMatrix);
+//  node.append(transformationNode);
+//
+//  var cubeNode = new CubeRenderNode();
+//  transformationNode.append(cubeNode);transformationNode = new TransformationSGNode(transformationMatrix);
+//  node.append(transformationNode);
+//
+//  var cubeNode = new CubeRenderNode();
+//  transformationNode.append(cubeNode);
+//}
 
 function createRobot(rootNode) {
   // TODO create robot transformation matrix
@@ -180,6 +204,11 @@ function createRobot(rootNode) {
     robotTransformationNode
   );
 
+}
+
+// TODO implement
+function createRobotTransformationMatrix() {
+  return makeIdentityMatrix();
 }
 
 function createBodyPart(matrixA, matrixB, matrixC, node) {
