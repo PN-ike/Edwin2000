@@ -147,12 +147,12 @@ function render(timeInMilliseconds) {
 
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
 
-  cam.upDateViewDirection() // updates the camera
+  cam.updateViewDirection()
 
-  //renderQuad(sceneMatrix, viewMatrix);
-  //renderRobot(sceneMatrix, viewMatrix);
+  renderQuad(sceneMatrix, viewMatrix);
+  renderRobot(sceneMatrix, viewMatrix);
 
-  myTestCameraRenderFunction(sceneMatrix, viewMatrix);
+  //myTestCameraRenderFunction(sceneMatrix, viewMatrix);
 
 
   //request another render call as soon as possible
