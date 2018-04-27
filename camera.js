@@ -74,9 +74,7 @@ class Camera {
     }
 
 
-    upDateViewDirection() {
-
-      // if(false) {
+    updateViewDirection() {
 
           let rotateMatrix = mat4.multiply(mat4.create(),
                                 glm.rotateX(-this.xDegree),
@@ -86,7 +84,6 @@ class Camera {
 
           vec3.normalize(this.viewDirection, this.viewDirection);
 
-      //}
     }
 
 }
