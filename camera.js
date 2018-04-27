@@ -1,22 +1,14 @@
 class Camera {
 
   constructor() {
-    this.multiplier = 2;
+    this.position = vec3.fromValues(0, 0, 3);
+    this.viewDirection = vec3.fromValues(0, 0, -1);
+    this.myUp = vec3.fromValues(0, 1, 0);
 
-    this.eyex = 0;
-    this.eyey = 0;
-    this.eyez = 2;
+    this.xDegree = 0;
+    this.yDegree = 0;
 
-    this.centerx = this.eyex;
-    this.centery = this.eyey;
-    this.centerz = this.eyez -1;
-
-    this.upx = 0;
-    this.upy = 1
-    this.upz = 0;
-
-    this.moveButton = false;
-    this.lookButton = false;
+    this.movementSpeed = 0.1;
 
     this.left = false;
     this.right = false;
@@ -24,88 +16,77 @@ class Camera {
     this.back = false;
     this.up = false;
     this.down = false;
-
-    this.lookHorizontalValue = 0;
-    this.lookVerticalValue = 0;
   }
 
-    moveUp(viewMatrix) {
-      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, -0.1, 0));
-      this.up = false;
-      this.moveButton = false;
-      return viewMatrix;
+    moveUp() {
+      var toAdd = vec3.create();
+      vec3.scale(toAdd, this.myUp, this.movementSpeed);
+      vec3.add(this.position, this.position, toAdd);
+
+      return;
     }
 
-    moveDown(viewMatrix) {
-      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0.1, 0));
-      this.down = false;
-      this.moveButton = false;
-      return viewMatrix;
+    moveDown() {
+      var toAdd = vec3.create();
+      vec3.scale(toAdd, this.myUp, -this.movementSpeed);
+      vec3.add(this.position, this.position, toAdd);
+
+      return;
     }
 
-    moveForward(viewMatrix) {
-      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, 0.1));
-      this.forward = false;
-      this.moveButton = false;
-      return viewMatrix;
+    moveForward() {
+
+      var toAdd = vec3.create();
+      vec3.scale(toAdd, this.viewDirection, this.movementSpeed);
+      vec3.add(this.position, this.position, toAdd);
+
+      return;
     }
 
-    moveBack(viewMatrix) {
-      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0, 0, -0.1));
-      this.back = false;
-      this.moveButton = false;
-      return viewMatrix;
+    moveBack() {
+      var toAdd = vec3.create();
+      vec3.scale(toAdd, this.viewDirection, -this.movementSpeed);
+      vec3.add(this.position, this.position, toAdd);
+
+      return;
     }
 
-    moveLeft(viewMatrix) {
-      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(0.1, 0, 0));
-      this.left = false;
-      this.moveButton = false;
-      return viewMatrix;
+    moveLeft() {
+      var direction = vec3.create();
+      var toAdd = vec3.create();
+
+      vec3.cross(direction, this.viewDirection, this.myUp);
+      vec3.scale(toAdd, direction, -this.movementSpeed);
+      vec3.add(this.position, this.position, toAdd);
+
+      return;
     }
 
-    moveRight(viewMatrix) {
-      viewMatrix = matrixMultiply(viewMatrix, makeTranslationMatrix(-0.1, 0, 0));
-      this.right = false;
-      this.moveButton = false;
-      return viewMatrix;
+    moveRight() {
+      var direction = vec3.create();
+      var toAdd = vec3.create();
+
+      vec3.cross(direction, this.viewDirection, this.myUp);
+      vec3.scale(toAdd, direction, this.movementSpeed);
+      vec3.add(this.position, this.position, toAdd);
+
+      return;
     }
 
-  lookUp(viewMatrix) {
-    viewMatrix = matrixMultiply(viewMatrix, makeXRotationMatrix(convertDegreeToRadians(this.lookVerticalValue*this.multiplier)));
-    this.lookButton = false;
-    this.up = false;
-    return viewMatrix;
-  }
 
-  lookDown(viewMatrix) {
-    viewMatrix = lookAt(0, 1, 2, );
-    this.lookButton = false;
-    this.down = false;
-    return viewMatrix;
-  }
+    upDateViewDirection() {
 
-  lookLeft(viewMatrix) {
+      // if(false) {
 
-    var v = vec3.fromValues(this.centerx, this.centery, this.centerz);
+          let rotateMatrix = mat4.multiply(mat4.create(),
+                                glm.rotateX(-this.xDegree),
+                                glm.rotateY(-this.yDegree));
 
-    v = matrixMultiply(v, makeYRotationMatrix(this.lookHorizontalValue + 0.01))
-    console.log(this.lookHorizontalValue)
-    console.log(v[0])
-    console.log(v[1])
-    console.log(v[2])
+          this.viewDirection = vec3.transformMat4(vec3.create(), [0, 0, -1], rotateMatrix);
 
+          vec3.normalize(this.viewDirection, this.viewDirection);
 
-    viewMatrix = lookAt(this.eyex, this.eyey, this.eyez, v[0], v[1], v[2], 0, 1, 0);
-    this.lookButton = false;
-    this.left = false;
-    return viewMatrix;
-  }
+      //}
+    }
 
-  lookRight(viewMatrix) {
-    viewMatrix = matrixMultiply(viewMatrix, makeYRotationMatrix(convertDegreeToRadians(-this.lookHorizontalValue*this.multiplier)));
-    this.lookButton = false;
-    this.right = false;
-    return viewMatrix;
-  }
 }

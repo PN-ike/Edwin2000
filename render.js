@@ -1,3 +1,9 @@
+// var posx = 0;
+// var posy = 0;
+// var posz = 0.1;
+// var prev = -10.5
+// var bool = true;
+
 
 function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
 
@@ -11,20 +17,32 @@ function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
 
     var originSceneMatrix = sceneMatrix;
 
-    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, 0, -5));
-    //sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(3, 3, 3));
+    sceneMatrix = originSceneMatrix;
     sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
-    //sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(180)));
+    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, 0, 2));
+
+
+     var inMat = mat4.create();
+     mat4.invert(inMat, sceneMatrix);
+     var initVals = vec3.fromValues(-0.3, -0.3, -0.3);
+     var outVals = vec4.create();
+     multiplyVectorMatrix(outVals, inMat, initVals);
+
+
+     // cam.viewDirection[0] = outVals[0];
+     // cam.viewDirection[1] = outVals[1];
+     // cam.viewDirection[2] = outVals[2];
+
     setUpModelViewMatrix(viewMatrix, sceneMatrix);
     renderCube();
 
-    sceneMatrix = originSceneMatrix;
-    sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, 5, 0));
-    sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(3, 3, 3));
-    sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
-    sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(180)));
-    setUpModelViewMatrix(viewMatrix, sceneMatrix);
-    renderCube();
+
+    //x -->12
+    //y -->13
+    //z -->14
+
+
+
 }
 
 function renderQuad(sceneMatrix, viewMatrix) {
