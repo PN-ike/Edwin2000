@@ -1,18 +1,19 @@
 var rootNode;
 
 function spanSceneGraph() {
-  rootNode = new SceneGraphNode();
+  rootNode = new SGNode();
 
   // create and place robot
   createRobot(rootNode);
   // create and place plane
   createPlane(rootNode);
+
+  return rootNode;
 }
 
 function createPlane(rootNode) {
-  // TODO create plane transformation matrix
   var planeTransformationMatrix = createPlaneTransformationMatrix();
-  var planeTransformationNode = new RenderSGNode(planeTransformationMatrix);
+  var planeTransformationNode = new TransformationSGNode(planeTransformationMatrix);
   rootNode.append(planeTransformationNode);
 
   // body TODO Translation to flight start (3. Argument)
@@ -29,7 +30,7 @@ function createPlane(rootNode) {
     makeYRotationMatrix(convertDegreeToRadians(animatedAngle)),
     makeZShearMatrix(0.5, 0),
     makeYShearMatrix(0, 0.8),
-    makeTranslationMatrix(1, 0, 0.5)
+    makeTranslationMatrix(1, 0, 0.5),
     makeScaleMatrix(1, 0.1, 2),
     planeTransformationNode
   );
@@ -40,7 +41,7 @@ function createPlane(rootNode) {
     makeYRotationMatrix(convertDegreeToRadians(animatedAngle)),
     makeZShearMatrix(-0.5, 0),
     makeYShearMatrix(0, -0.8),
-    makeTranslationMatrix(1, 0, -0.5)
+    makeTranslationMatrix(1, 0, -0.5),
     makeScaleMatrix(1, 0.1, 2),
     planeTransformationNode
   );
@@ -85,7 +86,7 @@ function createPlaneTransformationMatrix() {
 }
 
 function createPlanePart(matrixA, matrixB, matrixC, matrixD, matrixE, matrixF, node) {
-  var transformationMatrix = matrixA;
+  gl.mat4 =  transformationMatrix = matrixA;
   transformationMatrix = matrixMultiply(transformationMatrix, matrixB);
   transformationMatrix = matrixMultiply(transformationMatrix, matrixC);
   transformationMatrix = matrixMultiply(transformationMatrix, matrixD);
@@ -121,7 +122,7 @@ function createPlanePart(matrixA, matrixB, matrixC, matrixD, matrixE, matrixF, n
 function createRobot(rootNode) {
   // TODO create robot transformation matrix
   var robotTransformationMatrix = createRobotTransformationMatrix();
-  var robotTransformationNode = new RenderSGNode(robotTransformationMatrix);
+  var robotTransformationNode = new TransformationSGNode(robotTransformationMatrix);
   rootNode.append(robotTransformationNode);
 
   //body
@@ -138,14 +139,14 @@ function createRobot(rootNode) {
 
   //antenna
   createBodyPart(
-    makeYRotationMatrix(convertDegreeToRadians(animatedAngle))),
+    makeYRotationMatrix(convertDegreeToRadians(animatedAngle)),
     makeTranslationMatrix(0.07, 0.5, 0.1),
     makeScaleMatrix(0.1, 0.5, 0.1),
-    headTransformationNode
+    robotTransformationNode
   );
 
   //right arm
-  createArm(
+  createBodyPart(
     makeTranslationMatrix(0.4, 0, 0),
     makeScaleMatrix(0.4, 0.33, 0.5),
     makeXRotationMatrix(convertDegreeToRadians(animatedAngle*2)),
@@ -167,7 +168,7 @@ function createRobot(rootNode) {
   );
 
   //left arm
-  createArm(
+  createBodyPart(
     makeTranslationMatrix(-0.4, 0, 0),
     makeScaleMatrix(0.4, 0.33, 0.5),
     makeXRotationMatrix(convertDegreeToRadians(animatedAngle*2)),
@@ -227,7 +228,7 @@ function createBodyPart(matrixA, matrixB, matrixC, node) {
  * a cube node that renders a cube at its local origin
  * class as shown in lab
  */
-class CubeRenderNode extends SceneGraphNode {
+class CubeRenderNode extends SGNode {
 
   render(context) {
 

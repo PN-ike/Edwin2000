@@ -7,6 +7,9 @@ var canvasWidth = 800;
 var canvasHeight = 800;
 var aspectRatio = canvasWidth / canvasHeight;
 
+// scenegraph
+var rootNode;
+
 //camera and projection settings
 
 
@@ -113,6 +116,8 @@ function init(resources) {
   initCubeBuffer();
   initInteraction(gl.canvas);
 
+  // create scene graph
+  rootNode = spanSceneGraph();
 }
 
 /**
