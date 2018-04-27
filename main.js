@@ -8,8 +8,11 @@ var canvasHeight = 800;
 var aspectRatio = canvasWidth / canvasHeight;
 
 //camera and projection settings
+
+
+var fieldofViewValue = 60;
 var animatedAngle = 0;
-var fieldOfViewInRadians = convertDegreeToRadians(60);
+var fieldOfViewInRadians = convertDegreeToRadians(fieldofViewValue);
 
 var modelViewLocation;
 var positionLocation;
@@ -91,7 +94,6 @@ function init(resources) {
   gl = createContext(canvasWidth, canvasHeight);
 
   cam = new Camera();
-  previousViewMatrix = lookAt(cam.eyex, cam.eyey, cam.eyez, cam.centerx, cam.centery, cam.centerz, cam.upx, cam.upy, cam.upz);
 
   //in WebGL / OpenGL3 we have to create and use our own shaders for the programmable pipeline
   //create the shader program
@@ -138,54 +140,25 @@ function render(timeInMilliseconds) {
   var sceneMatrix = makeIdentityMatrix();
 
   //var viewMatrix = calculateViewMatrix(makeIdentityMatrix());
-  var viewMatrix = calculateViewMatrix(previousViewMatrix);
+  var viewMatrix = lookAt(cam.position[0], cam.position[1], cam.position[2],
+                        (cam.position[0] + cam.viewDirection[0]), (cam.position[1] + cam.viewDirection[1]), (cam.position[2] + cam.viewDirection[2]),
+                        cam.myUp[0], cam.myUp[1], cam.myUp[2]);
+
+
   setUpModelViewMatrix(viewMatrix, sceneMatrix);
 
-  renderQuad(sceneMatrix, viewMatrix);
-  renderRobot(sceneMatrix, viewMatrix);
+  cam.upDateViewDirection() // updates the camera
 
-  //myTestCameraRenderFunction(sceneMatrix, viewMatrix);
+  //renderQuad(sceneMatrix, viewMatrix);
+  //renderRobot(sceneMatrix, viewMatrix);
+
+  myTestCameraRenderFunction(sceneMatrix, viewMatrix);
+
 
   //request another render call as soon as possible
   requestAnimationFrame(render);
 
   animatedAngle = timeInMilliseconds/10;
-}
-
-function calculateViewMatrix(viewMatrix) {
-
-  if (cam.moveButton) {
-    if (cam.forward) {
-      viewMatrix = cam.moveForward(viewMatrix);
-    } else if (cam.back) {
-      viewMatrix = cam.moveBack(viewMatrix);
-    } else if (cam.left) {
-      viewMatrix = cam.moveLeft(viewMatrix);
-    } else if (cam.right) {
-      viewMatrix = cam.moveRight(viewMatrix);
-    } else if (cam.up) {
-      viewMatrix = cam.moveUp(viewMatrix);
-    }else if (cam.down) {
-      viewMatrix = cam.moveDown(viewMatrix);
-    }
-    previousViewMatrix = viewMatrix;
-  }
-  else if (cam.lookButton) {
-    if (cam.right) {
-      viewMatrix = cam.lookRight(viewMatrix);
-    } else if (cam.left) {
-      viewMatrix = cam.lookLeft(viewMatrix);
-    } else if (cam.up) {
-      viewMatrix = cam.lookUp(viewMatrix);
-    } else if (cam.down) {
-      viewMatrix = cam.lookDown(viewMatrix);
-    }
-    previousViewMatrix = viewMatrix;
-  } else {
-    viewMatrix = previousViewMatrix;
-  }
-
-return viewMatrix;
 }
 
 function setUpModelViewMatrix(viewMatrix, sceneMatrix) {

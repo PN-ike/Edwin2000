@@ -1,54 +1,54 @@
+const mouse = {
+  pos: { x : 0, y : 0},
+  leftButtonDown: false
+};
 
 function initInteraction(canvas) {
+
   document.addEventListener('keypress', function(event) {
     //listen for key event globally
     if(event.code === 'KeyW'){
-        cam.moveButton = true;
-        cam.forward = true;
+      cam.moveForward();
     }
     if(event.code === 'KeyS'){
-        cam.moveButton = true;
-        cam.back = true;
+      cam.moveBack();
     }
     if(event.code === 'KeyA'){
-        cam.moveButton = true;
-        cam.left = true;
-    }
+      cam.moveLeft();
+  }
     if(event.code === 'KeyD'){
-        cam.moveButton = true;
-        cam.right = true;
+      cam.moveRight();
     }
     if(event.code === 'KeyE'){
-        cam.moveButton = true;
-        cam.up = true;
+      cam.moveUp();
     }
     if(event.code === 'KeyQ'){
-        cam.moveButton = true;
-        cam.down = true;
+      cam.moveDown();
     }
-    if(event.code === 'KeyK'){
-      cam.lookButton = true;
-      cam.right = true;
-      cam.lookHorizontalValue++;
-    }
-    if(event.code === 'KeyH'){
-      cam.lookButton = true;
-      cam.left = true;
-      cam.lookHorizontalValue--;
-    }
-    if(event.code === 'KeyU'){
-      cam.lookButton = true;
-      cam.up = true;
-      cam.lookVerticalValue--;
-    }
-    if(event.code === 'KeyJ'){
-      cam.lookButton = true;
-      cam.down = true;
-      cam.lookVerticalValue++;
-    }
-  });
-}
 
+  });
+    canvas.addEventListener('mousedown', function(event) {
+        mouse.pos = toPos(event);
+        mouse.leftButtonDown = event.button === 0;
+      });
+      canvas.addEventListener('mousemove', function(event) {
+        const pos = toPos(event);
+        const delta = { x : mouse.pos.x - pos.x, y: mouse.pos.y - pos.y };
+        if (mouse.leftButtonDown) {
+           //substract to get inverted movement
+          cam.yDegree += delta.x*.25; // if we have a x-delta we want to rotate around y
+          cam.xDegree += delta.y*.25; // multipy with 0.25 for pixel to Degree conversion
+          cam.xDegree = Math.min(90, cam.xDegree);
+          cam.xDegree = Math.max(-90, cam.xDegree);
+        }
+        mouse.pos = pos;
+      });
+      canvas.addEventListener('mouseup', function(event) {
+        mouse.pos = toPos(event);
+        mouse.leftButtonDown = false;
+      });
+
+}
 
 function initQuadBuffer() {
 
@@ -77,4 +77,14 @@ function initCubeBuffer() {
   cubeIndexBuffer = gl.createBuffer ();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
+}
+
+
+function toPos(event) {
+  //convert to local coordinates
+  const rect = gl.canvas.getBoundingClientRect();
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  };
 }
