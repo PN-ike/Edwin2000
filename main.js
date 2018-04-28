@@ -7,21 +7,18 @@ var canvasWidth = 800;
 var canvasHeight = 800;
 var aspectRatio = canvasWidth / canvasHeight;
 
-// scenegraph
 var rootNode;
 
 //camera and projection settings
 
-
-var fieldofViewValue = 60;
 var animatedAngle = 0;
-var fieldOfViewInRadians = convertDegreeToRadians(fieldofViewValue);
+var fieldOfViewInRadians = convertDegreeToRadians(60);
 
 var modelViewLocation;
 var positionLocation;
 var colorLocation;
 var projectionLocation;
-//comment to try pushing
+
 var movementButtonPressend = false;
 
 //links to buffer stored on the GPU
@@ -74,12 +71,11 @@ var cubeIndices =  new Float32Array([
 
 var cam;
 
-var previousViewMatrix;
-
 //load the shader resources using a utility function
 loadResources({
   vs: 'shader/simple.vs.glsl',
-  fs: 'shader/simple.fs.glsl'
+  fs: 'shader/simple.fs.glsl',
+  bvs: 'shader/billboard.vs.glsl'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 
@@ -91,7 +87,6 @@ loadResources({
  * initializes OpenGL context, compile shader, and load buffers
  */
 function init(resources) {
-
 
   //create a GL context
   gl = createContext(canvasWidth, canvasHeight);
@@ -147,7 +142,6 @@ function render(timeInMilliseconds) {
 
   var sceneMatrix = makeIdentityMatrix();
 
-  //var viewMatrix = calculateViewMatrix(makeIdentityMatrix());
   var viewMatrix = lookAt(cam.position[0], cam.position[1], cam.position[2],
                         (cam.position[0] + cam.viewDirection[0]), (cam.position[1] + cam.viewDirection[1]), (cam.position[2] + cam.viewDirection[2]),
                         cam.myUp[0], cam.myUp[1], cam.myUp[2]);
@@ -160,6 +154,7 @@ function render(timeInMilliseconds) {
   //renderQuad(sceneMatrix, viewMatrix);
   //renderRobot(sceneMatrix, viewMatrix);
 
+<<<<<<< HEAD
 
   context = createSceneGraphContext(gl, shaderProgram);
 
@@ -167,6 +162,8 @@ function render(timeInMilliseconds) {
   //myTestCameraRenderFunction(sceneMatrix, viewMatrix);
 
 
+=======
+>>>>>>> c3bec196c3b5e30a5efcb41cd12237f29fc65f6d
   //request another render call as soon as possible
   requestAnimationFrame(render);
 

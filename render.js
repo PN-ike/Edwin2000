@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // var posx = 0;
 // var posy = 0;
 // var posz = 0.1;
@@ -5,6 +6,9 @@
 // var bool = true;
 
 // TODO render"klasse" eigentlich obsolot mit funktionierendem scene graph
+=======
+
+>>>>>>> c3bec196c3b5e30a5efcb41cd12237f29fc65f6d
 function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
@@ -21,13 +25,11 @@ function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
     sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
     sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, 0, 2));
 
-
      var inMat = mat4.create();
      mat4.invert(inMat, sceneMatrix);
      var initVals = vec3.fromValues(-0.3, -0.3, -0.3);
      var outVals = vec4.create();
      multiplyVectorMatrix(outVals, inMat, initVals);
-
 
      // cam.viewDirection[0] = outVals[0];
      // cam.viewDirection[1] = outVals[1];
@@ -36,13 +38,9 @@ function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
     setUpModelViewMatrix(viewMatrix, sceneMatrix);
     renderCube();
 
-
     //x -->12
     //y -->13
     //z -->14
-
-
-
 }
 // TODO rausschmeißen vor Abgabe
 function renderQuad(sceneMatrix, viewMatrix) {
