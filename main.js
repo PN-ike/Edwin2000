@@ -116,8 +116,11 @@ function init(resources) {
   initCubeBuffer();
   initInteraction(gl.canvas);
 
+  rootNode = new SGNode();
+  var shaderNode = new ShaderSGNode(shaderProgram);
+  rootNode.append(shaderNode);
   // create scene graph
-  rootNode = spanSceneGraph();
+  spanSceneGraph(rootNode);
 }
 
 /**
@@ -154,9 +157,13 @@ function render(timeInMilliseconds) {
 
   cam.updateViewDirection()
 
-  renderQuad(sceneMatrix, viewMatrix);
-  renderRobot(sceneMatrix, viewMatrix);
+  //renderQuad(sceneMatrix, viewMatrix);
+  //renderRobot(sceneMatrix, viewMatrix);
 
+
+  context = createSceneGraphContext(gl, shaderProgram);
+
+  rootNode.render(context);
   //myTestCameraRenderFunction(sceneMatrix, viewMatrix);
 
 
@@ -164,6 +171,30 @@ function render(timeInMilliseconds) {
   requestAnimationFrame(render);
 
   animatedAngle = timeInMilliseconds/10;
+}
+
+/**
+ * returns a new rendering context
+ * @param gl the gl context
+ * @param projectionMatrix optional projection Matrix
+ * @returns {ISceneGraphContext}
+ */
+function createSceneGraphContext(gl, shader) {
+
+  //create a default projection matrix
+  projectionMatrix = mat4.perspective(mat4.create(), fieldOfViewInRadians, aspectRatio, 0.01, 10);
+  //set projection matrix
+  gl.uniformMatrix4fv(gl.getUniformLocation(shader, 'u_projection'), false, projectionMatrix);
+
+  return {
+    gl: gl,
+    sceneMatrix: mat4.create(),
+    viewMatrix: lookAt(cam.position[0], cam.position[1], cam.position[2],
+                          (cam.position[0] + cam.viewDirection[0]), (cam.position[1] + cam.viewDirection[1]), (cam.position[2] + cam.viewDirection[2]),
+                          cam.myUp[0], cam.myUp[1], cam.myUp[2]),
+    projectionMatrix: projectionMatrix,
+    shader: shader
+  };
 }
 
 function setUpModelViewMatrix(viewMatrix, sceneMatrix) {

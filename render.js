@@ -4,7 +4,7 @@
 // var prev = -10.5
 // var bool = true;
 
-
+// TODO render"klasse" eigentlich obsolot mit funktionierendem scene graph
 function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
@@ -44,7 +44,7 @@ function myTestCameraRenderFunction(sceneMatrix, viewMatrix) {
 
 
 }
-
+// TODO rausschmeißen vor Abgabe
 function renderQuad(sceneMatrix, viewMatrix) {
 
   sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0, -0.9, 0));
@@ -67,6 +67,7 @@ function renderQuad(sceneMatrix, viewMatrix) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
+// TODO rausschmeißen vor Abgabe
 function renderRobot(sceneMatrix, viewMatrix) {
 
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
@@ -163,6 +164,7 @@ function renderRobot(sceneMatrix, viewMatrix) {
 
 }
 
+// TODO rausschmeißen vor Abgabe
 function renderPlane() {
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
   gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
@@ -237,6 +239,7 @@ function renderPlane() {
   renderCube();
 }
 
+// TODO rausschmeißen vor Abgabe
 function renderCube() {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
   gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP

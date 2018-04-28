@@ -1,14 +1,9 @@
-var rootNode;
-
-function spanSceneGraph() {
-  rootNode = new SGNode();
+function spanSceneGraph(rootNode) {
 
   // create and place robot
   createRobot(rootNode);
   // create and place plane
   createPlane(rootNode);
-
-  return rootNode;
 }
 
 function createPlane(rootNode) {
@@ -126,7 +121,7 @@ function createRobot(rootNode) {
   rootNode.append(robotTransformationNode);
 
   //body
-  var bodyNode = new CubeRenderNode();
+  bodyNode = new CubeRenderNode();
   robotTransformationNode.append(bodyNode);
 
   //head
