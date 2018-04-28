@@ -83,7 +83,5 @@ class Camera {
           this.viewDirection = vec3.transformMat4(vec3.create(), [0, 0, -1], rotateMatrix);
 
           vec3.normalize(this.viewDirection, this.viewDirection);
-
     }
-
 }
