@@ -1,3 +1,52 @@
+
+//links to buffer stored on the GPU
+var quadVertexBuffer, quadColorBuffer;
+var cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer;
+
+var quadVertices = new Float32Array([
+    -1.0, -1.0,
+    1.0, -1.0,
+    -1.0, 1.0,
+    -1.0, 1.0,
+    1.0, -1.0,
+    1.0, 1.0]);
+
+var quadColors = new Float32Array([
+    1, 0, 0, 1,
+    0, 1, 0, 1,
+    0, 0, 1, 1,
+    0, 0, 1, 1,
+    0, 1, 0, 1,
+    0, 0, 0, 1]);
+
+var s = 0.3; //size of cube
+var cubeVertices = new Float32Array([
+   -s,-s,-s, s,-s,-s, s, s,-s, -s, s,-s,
+   -s,-s, s, s,-s, s, s, s, s, -s, s, s,
+   -s,-s,-s, -s, s,-s, -s, s, s, -s,-s, s,
+   s,-s,-s, s, s,-s, s, s, s, s,-s, s,
+   -s,-s,-s, -s,-s, s, s,-s, s, s,-s,-s,
+   -s, s,-s, -s, s, s, s, s, s, s, s,-s,
+]);
+
+var cubeColors = new Float32Array([
+   0,1,1, 0,1,1, 0,1,1, 0,1,1,
+   1,0,1, 1,0,1, 1,0,1, 1,0,1,
+   1,0,0, 1,0,0, 1,0,0, 1,0,0,
+   0,0,1, 0,0,1, 0,0,1, 0,0,1,
+   1,1,0, 1,1,0, 1,1,0, 1,1,0,
+   0,1,0, 0,1,0, 0,1,0, 0,1,0
+]);
+
+var cubeIndices =  new Float32Array([
+   0,1,2, 0,2,3,
+   4,5,6, 4,6,7,
+   8,9,10, 8,10,11,
+   12,13,14, 12,14,15,
+   16,17,18, 16,18,19,
+   20,21,22, 20,22,23
+]);
+
 const mouse = {
   pos: { x : 0, y : 0},
   leftButtonDown: false
@@ -8,22 +57,22 @@ function initInteraction(canvas) {
   document.addEventListener('keypress', function(event) {
     //listen for key event globally
     if(event.code === 'KeyW'){
-      cam.moveForward();
+      camera.moveForward();
     }
     if(event.code === 'KeyS'){
-      cam.moveBack();
+      camera.moveBack();
     }
     if(event.code === 'KeyA'){
-      cam.moveLeft();
+      camera.moveLeft();
   }
     if(event.code === 'KeyD'){
-      cam.moveRight();
+      camera.moveRight();
     }
     if(event.code === 'KeyE'){
-      cam.moveUp();
+      camera.moveUp();
     }
     if(event.code === 'KeyQ'){
-      cam.moveDown();
+      camera.moveDown();
     }
 
   });
@@ -36,10 +85,10 @@ function initInteraction(canvas) {
         const delta = { x : mouse.pos.x - pos.x, y: mouse.pos.y - pos.y };
         if (mouse.leftButtonDown) {
            //substract to get inverted movement
-          cam.yDegree += delta.x*.25; // if we have a x-delta we want to rotate around y
-          cam.xDegree += delta.y*.25; // multipy with 0.25 for pixel to Degree conversion
-          cam.xDegree = Math.min(90, cam.xDegree);
-          cam.xDegree = Math.max(-90, cam.xDegree);
+          camera.yDegree += delta.x*.25; // if we have a x-delta we want to rotate around y
+          camera.xDegree += delta.y*.25; // multipy with 0.25 for pixel to Degree conversion
+          camera.xDegree = Math.min(90, camera.xDegree);
+          camera.xDegree = Math.max(-90, camera.xDegree);
         }
         mouse.pos = pos;
       });
