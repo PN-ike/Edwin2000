@@ -74,6 +74,9 @@ function initInteraction(canvas) {
     if(event.code === 'KeyQ'){
       camera.moveDown();
     }
+    if(event.code === 'KeyF'){
+      camera.free = true;
+    }
 
   });
     canvas.addEventListener('mousedown', function(event) {

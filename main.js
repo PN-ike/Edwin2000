@@ -73,7 +73,7 @@ function init(resources) {
 function render(timeInMilliseconds) {
 
   //set background color to light gray
-  gl.clearColor(0.9, 0.9, 0.9, 1.0);
+  gl.clearColor(0.6, 0.9, 0.9, 1.0);
   //clear the buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   //enable depth test to let objects in front occluse objects further away
@@ -88,9 +88,13 @@ function render(timeInMilliseconds) {
 
   context = createSceneGraphContext(gl, shaderProgram);
 
-  roboDance();
-  animateEdwin();
-  camera.updateViewDirection()
+
+  //roboDance();
+  roboWalkInACircle();
+  //animateEdwin();
+  if (camera.free) {
+      camera.updateViewDirection();
+  }
   rootNode.render(context);
 
   //request another render call as soon as possible
@@ -106,6 +110,12 @@ function setUpModelViewMatrix(sceneMatrix, viewMatrix) {
 }
 
 function calculateViewMatrix() {
-  viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
+
+
+  if (camera.free) {
+    viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
+  } else {
+    viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
+  }
   return viewMatrix;
 }

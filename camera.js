@@ -3,7 +3,7 @@ var camera;
 class Camera {
 
   constructor() {
-    this.position = vec3.fromValues(0, 0.5, 3);
+    this.position = vec3.fromValues(0, 1, 3);
     this.viewDirection = vec3.fromValues(0, 0, -1);
     this.myUp = vec3.fromValues(0, 1, 0);
 
@@ -18,6 +18,9 @@ class Camera {
     this.back = false;
     this.up = false;
     this.down = false;
+
+    this.free = true;
+
   }
 
     moveUp() {

@@ -100,6 +100,16 @@ function roboDance() {
 
 //implements movement of robo, called for each frame from render()
 //turn of when working on the layout!!!
+
+function roboWalkInACircle() {
+
+  //walks in a circle
+  var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle));
+    robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(2,0.9,0));
+    robotTransformationNode.setMatrix(robotTransformationMatrix);
+
+}
+
 function roboFly() {
 
   //update transformation of robot for rotation animation
