@@ -1,3 +1,32 @@
+function createFloor(rootNode) {
+  var quadTransformationMatrix = glm.rotateX(90);
+  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.translate(0.0, 0.0 ,0));
+  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.scale(20,20,1));
+
+  var transformationNode = new TransformationSceneGraphNode(quadTransformationMatrix);
+  rootNode.append(transformationNode);
+
+  var staticColorShaderNode = new ShaderSceneGraphNode(createProgram(gl, staticColorVertexShader, simpleFragmentShader));
+  transformationNode.append(staticColorShaderNode);
+
+  var quadNode = new QuadRenderNode();
+  staticColorShaderNode.append(quadNode);
+}
+
+
+function createGlassWall(rootNode) {
+
+    var wallTransformationNode =  new TransformationSceneGraphNode(glm.transform({
+        rotateY: 45,
+        translate: [13, 4.5, 10],
+        scale: [20, 15, 0.5]}));
+    rootNode.append(wallTransformationNode);
+
+    var staticColorShaderNode = new ShaderSceneGraphNode(createProgram(gl, simpleVertexShader, simpleFragmentShader));
+    wallTransformationNode.append(staticColorShaderNode);
+    wallTransformationNode.append(new WallRenderNode());
+}
+
 /**
  * a quad node that renders floor plane
  */
@@ -50,7 +79,7 @@ class CubeRenderNode extends SGNode {
     gl.enableVertexAttribArray(colorLocation);
 
     //set alpha value for blending
-    gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 0.5);
+    gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 1);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
     gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
@@ -60,6 +89,33 @@ class CubeRenderNode extends SGNode {
   }
 }
 
+class WallRenderNode extends SGNode {
+
+  render(context) {
+
+    //setting the model view and projection matrix on shader
+    setUpModelViewMatrix(context.sceneMatrix, context.viewMatrix);
+
+    var positionLocation = gl.getAttribLocation(context.shader, 'a_position');
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
+    gl.enableVertexAttribArray(positionLocation);
+
+    var colorLocation = gl.getAttribLocation(context.shader, 'a_color');
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
+    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
+    gl.enableVertexAttribArray(colorLocation);
+
+    //set alpha value for blending
+    gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 0.2);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
+    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    //render children
+    super.render(context);
+  }
+}
 /**
  * a transformation node, i.e applied a transformation matrix to its successors
  */

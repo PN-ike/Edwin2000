@@ -6,14 +6,17 @@ var shaderProgram = null;
 var canvasWidth = 800;
 var canvasHeight = 800;
 var aspectRatio = canvasWidth / canvasHeight;
-
 //rendering context
 var context;
-
 //camera and projection settings
 var animatedAngle = 0;
 var fieldOfViewInRadians = convertDegreeToRadians(30);
 //load the shader resources using a utility function
+var simpleVertexShader;
+var simpleFragmentShader;
+var staticColorVertexShader;
+var billboardVertexShader;
+
 loadResources({
   vs: 'shader/simple.vs.glsl',
   fs: 'shader/simple.fs.glsl',
@@ -31,12 +34,18 @@ loadResources({
  */
 function init(resources) {
 
+
+
   //create a GL context
   gl = createContext(canvasWidth, canvasHeight);
 
   //in WebGL / OpenGL3 we have to create and use our own shaders for the programmable pipeline
   //create the shader program
   shaderProgram = createProgram(gl, resources.vs, resources.fs);
+  simpleVertexShader = resources.vs;
+  simpleFragmentShader = resources.fs;
+  billboardVertexShader = resources.bvs;
+  staticColorVertexShader = resources.staticcolorvs;
 
   camera = new Camera();
 
@@ -48,25 +57,15 @@ function init(resources) {
   //create scenegraph
   rootNode = new SGNode();
 
-  var quadTransformationMatrix = glm.rotateX(90);
-  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.translate(0.0, 0.0 ,0));
-  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.scale(20,20,1));
-
-  var transformationNode = new TransformationSceneGraphNode(quadTransformationMatrix);
-  rootNode.append(transformationNode);
-
-  var staticColorShaderNode = new ShaderSceneGraphNode(createProgram(gl, resources.staticcolorvs, resources.fs));
-  transformationNode.append(staticColorShaderNode);
-
-  var quadNode = new QuadRenderNode();
-  staticColorShaderNode.append(quadNode);
-
+  createFloor(rootNode);
   createRobot(rootNode);
   createEdwin(rootNode);
+  createGlassWall(rootNode);
 
   initInteraction(gl.canvas);
 
 }
+
 /**
  * render one frame
  */
@@ -114,6 +113,7 @@ function calculateViewMatrix() {
   if (camera.free) {
     viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
   } else {
+    //viewMatrix = mat4.lookAt(mat4.create(), camera.position, camera.viewDirection, camera.myUp);
     viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
   }
   return viewMatrix;
