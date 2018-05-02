@@ -137,7 +137,7 @@ class ShaderSceneGraphNode extends SGNode {
 function createSceneGraphContext(gl, shader) {
 
   //create a default projection matrix
-  projectionMatrix = mat4.perspective(mat4.create(), fieldOfViewInRadians, aspectRatio, 0.01, 30);
+  projectionMatrix = mat4.perspective(mat4.create(), fieldOfViewInRadians, aspectRatio, 0.01, 50);
   //set projection matrix
   gl.uniformMatrix4fv(gl.getUniformLocation(shader, 'u_projection'), false, projectionMatrix);
 

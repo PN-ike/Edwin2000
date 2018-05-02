@@ -23,14 +23,14 @@ function createRobot(rootNode) {
 
   headTransformationNode.append(new CubeRenderNode());
 
-  // TODO
-  //   //antenna
-  //   sceneMatrix = originSceneMatrix;
-  //   sceneMatrix = matrixMultiply(sceneMatrix, makeYRotationMatrix(convertDegreeToRadians(animatedAngle)));
-  //   sceneMatrix = matrixMultiply(sceneMatrix, makeTranslationMatrix(0.07, 0.5, 0.1));
-  //   sceneMatrix = matrixMultiply(sceneMatrix, makeScaleMatrix(0.1, 0.5, 0.1));
-  //   setUpModelViewMatrix(viewMatrix, sceneMatrix);
-  //   renderCube();
+  var antennaTransformationNode = new TransformationSGNode(glm.transform({
+    rotateY: animatedAngle,
+    translate: [0.07, 0.5, 0.1],
+    scale: [0.1, 0.5, 0.1]
+  }))
+  robotTransformationNode.append(antennaTransformationNode);
+
+  antennaTransformationNode.append(new CubeRenderNode());
 
   //left leg
   var leftLegTransformationNode = new TransformationSceneGraphNode(glm.transform({
@@ -87,6 +87,10 @@ function createRobot(rootNode) {
 
 }
 
+function animateRobot() {
+  roboDanceInACircle();
+}
+
 function roboDance() {
 
   var robotTransformationMatrix = glm.transform({
@@ -101,11 +105,11 @@ function roboDance() {
 //implements movement of robo, called for each frame from render()
 //turn of when working on the layout!!!
 
-function roboWalkInACircle() {
+function roboDanceInACircle() {
 
-  //walks in a circle
   var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle));
-    robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(2,0.9,0));
+    robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(1,0.9,0));
+    robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.rotateY(animatedAngle));
     robotTransformationNode.setMatrix(robotTransformationMatrix);
 
 }

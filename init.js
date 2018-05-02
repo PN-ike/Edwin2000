@@ -77,7 +77,10 @@ function initInteraction(canvas) {
     if(event.code === 'KeyF'){
       camera.free = true;
     }
-
+    if(event.code === 'KeyC'){
+      console.log("position: " + camera.position);
+      console.log("viewDirection: " + camera.viewDirection);
+    }
   });
     canvas.addEventListener('mousedown', function(event) {
         mouse.pos = toPos(event);

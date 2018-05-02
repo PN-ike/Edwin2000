@@ -1,15 +1,18 @@
 var edwinTransformationNode;
 
-var edwinX = -10;
-var edwinY = 4;
-var edwinZ = 0;
+var edwinX = -20;
+var edwinY = 5;
+var edwinZ = -20;
+var rotateY = 45;
+var rotateZ = 0;
 
 //implements edwins layout, called once from init()
 function createEdwin(rootNode) {
 
 
   edwinTransformationNode = new TransformationSceneGraphNode(glm.transform({
-      translate: [edwinX, edwinY, edwinZ]}));
+      translate: [edwinX, edwinY, edwinZ],
+      rotateY: 45,}));
   rootNode.append(edwinTransformationNode);
 
 
@@ -85,47 +88,54 @@ function createEdwin(rootNode) {
 //implements movement of edwin, called for each frame from render()
 //turn of when working on the layout!!!
 function animateEdwin () {
-  //edwinFlyToRoboAndDance();
-  edwinFlyInACircle()
+  edwinFlyToRoboAndDance();
+  //edwinFlyInACircle()
 }
 
 function edwinFlyToRoboAndDance() {
 
-  if (edwinX < roboX) {
-    edwinMove();
+  if (edwinX < -3 && edwinZ < -3) {
+    edwinMoveToRobo();
   } else {
-    edwinDance();
+    edwinFlyInACircle();
   }
 }
 
 function edwinFlyInACircle() {
-  //scale: [1,0.5, 5.0],
-    //
-    // console.log(animatedAngle)
-    // var flyInACircleMatrix = glm.transform({
-    //   rotateY: animatedAngle,
-    //   translate: [edwinX, edwinY, edwinZ],
-    //   scale: [1,0.5, 5.0]});
-    //
-    //
-    //
-    // edwinTransformationNode.setMatrix(flyInACircleMatrix);
+      rotateY += 1
 
-    var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(animatedAngle));
+    var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(rotateY));
+      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.rotateZ(rotateZ));
       robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(edwinX,edwinY,edwinZ));
       edwinTransformationNode.setMatrix(robotTransformationMatrix);
 
 }
 
-function edwinMove() {
+function edwinMoveToRobo() {
 
-  edwinX+= 0.05;
+  edwinX += 0.01;
+  edwinZ += 0.01;
+
+  if (rotateZ > -25) {
+    rotateZ -= 0.3;
+    edwinX += 0.01;
+    edwinZ -= 0.015;
+  } else {
+    if (rotateY < 60) {
+      rotateY += 0.1;
+      edwinX += 0.01;
+      edwinZ += 0.01;
+    }
+  }
+
+  // if (edwinX > -5) {
+  //   rotateY -= 0.2;
+  // }
 
   var edwinTransformationMatrix = glm.transform({
-    rotateY: 90,
-    translate: [edwinX, edwinY, edwinZ],
-    scale: [1,0.5, 5.0],});
-
+    rotateY: rotateY,
+    rotateZ: rotateZ,
+    translate: [edwinX, edwinY, edwinZ]});
     edwinTransformationNode.setMatrix(edwinTransformationMatrix);
 
 }

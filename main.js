@@ -50,7 +50,7 @@ function init(resources) {
 
   var quadTransformationMatrix = glm.rotateX(90);
   quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.translate(0.0, 0.0 ,0));
-  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.scale(10,10,1));
+  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.scale(20,20,1));
 
   var transformationNode = new TransformationSceneGraphNode(quadTransformationMatrix);
   rootNode.append(transformationNode);
@@ -88,10 +88,9 @@ function render(timeInMilliseconds) {
 
   context = createSceneGraphContext(gl, shaderProgram);
 
+  animateRobot();
+  animateEdwin();
 
-  //roboDance();
-  roboWalkInACircle();
-  //animateEdwin();
   if (camera.free) {
       camera.updateViewDirection();
   }
