@@ -3,8 +3,8 @@ var gl = null;
 //our shader program
 var shaderProgram = null;
 
-var canvasWidth = 800;
-var canvasHeight = 800;
+var canvasWidth = 2000;
+var canvasHeight = 1200;
 var aspectRatio = canvasWidth / canvasHeight;
 //rendering context
 var context;
@@ -88,7 +88,9 @@ function render(timeInMilliseconds) {
   context = createSceneGraphContext(gl, shaderProgram);
 
   animateRobot();
-  animateEdwin();
+  animateEdwin(timeInMilliseconds);
+  displayText(timeInMilliseconds);
+  //displayText(camera.viewDirection[0]);
 
   if (camera.free) {
       camera.updateViewDirection();

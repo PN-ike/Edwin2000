@@ -1,7 +1,7 @@
 var robotTransformationNode;
 
 var roboX = 0;
-var roboY = .9;
+var roboY = 0;
 var roboZ = 0;
 
 

@@ -3,16 +3,18 @@ var edwinTransformationNode;
 var edwinX = -20;
 var edwinY = 5;
 var edwinZ = -20;
-var rotateY = 45;
-var rotateZ = 0;
-
+var rotateYAx = 45;
+var rotateOZ = 0;
+var keyFrames;
+var position;
+var callCount = 0;
 //implements edwins layout, called once from init()
 function createEdwin(rootNode) {
 
 
   edwinTransformationNode = new TransformationSceneGraphNode(glm.transform({
       translate: [edwinX, edwinY, edwinZ],
-      rotateY: 45,}));
+      rotateOY: 0,}));
   rootNode.append(edwinTransformationNode);
 
 
@@ -82,71 +84,187 @@ function createEdwin(rootNode) {
 
   finnTransformationNode.append(new CubeRenderNode());
 
-
+  // init key frames
+  keyFrames = createKeyFrames();
 }
 
 //implements movement of edwin, called for each frame from render()
 //turn of when working on the layout!!!
-function animateEdwin () {
-  edwinFlyToRoboAndDance();
-  //edwinFlyInACircle()
-}
+function animateEdwin (timeInMilliSeconds) {
+  var startP;
+  var destP;
+  var startT;
+  var destT;
+  var position;
+  var rotate = false;
+  var animationEnd = false;
 
-function edwinFlyToRoboAndDance() {
+  if(timeInMilliSeconds <= 3000) {
+    startP = keyFrames[0];
+    destP = keyFrames[1];
+    startT = timeInMilliSeconds;
+    destT = 3000;
 
-  if (edwinX < -3 && edwinZ < -3) {
-    edwinMoveToRobo();
+  } else if(timeInMilliSeconds <= 8000) {
+    startP = keyFrames[1];
+    destP = keyFrames[2];
+    startT = timeInMilliSeconds - 3000;
+    destT = 8000 - 3000;
+    rotate = true;
+
+  } else if(timeInMilliSeconds <= 12000) {
+    startP = keyFrames[2];
+    destP = keyFrames[3];
+    startT = timeInMilliSeconds - 8000;
+    destT = 12000 - 8000;
+    rotate = true;
+
+  } else if(timeInMilliSeconds <= 17000) {
+    startP = keyFrames[3];
+    destP = keyFrames[4];
+    startT = timeInMilliSeconds - 12000;
+    destT = 17000 - 12000;
+    rotate = true;
+
+  } else if(timeInMilliSeconds <= 21000) {
+    startP = keyFrames[4];
+    destP = keyFrames[5];
+    startT = timeInMilliSeconds - 17000;
+    destT = 21000 - 17000;
+    rotate = true;
+
+  } else if(timeInMilliSeconds <= 28000) {
+    startP = keyFrames[5];
+    destP = keyFrames[6];
+    startT = timeInMilliSeconds - 21000;
+    destT = 28000 - 21000;
+
+  } else if(timeInMilliSeconds <= 30000) {
+    startP = keyFrames[6];
+    destP = keyFrames[7];
+    startT = timeInMilliSeconds - 28000;
+    destT = 30000 - 28000;
+
   } else {
-    edwinFlyInACircle();
+    animationEnd = true;
   }
-}
 
-function edwinFlyInACircle() {
-      rotateY += 1
+if(!animationEnd) {
+    var position = quat.create();
+    var t = startT/destT;
+    // clamp t
+    t = Math.max(0, Math.min(1, t));
 
-    var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(rotateY));
-      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.rotateZ(rotateZ));
-      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(edwinX,edwinY,edwinZ));
-      edwinTransformationNode.setMatrix(robotTransformationMatrix);
+    quat.slerp(position, startP, destP, t);
 
-}
+    var rotation = quat.create();
+    quat.rotationTo(rotation, startP, destP);
 
-function edwinMoveToRobo() {
+    var edwinRotationMatrix = mat4.create();
 
-  edwinX += 0.01;
-  edwinZ += 0.01;
-
-  if (rotateZ > -25) {
-    rotateZ -= 0.3;
-    edwinX += 0.01;
-    edwinZ -= 0.015;
-  } else {
-    if (rotateY < 60) {
-      rotateY += 0.1;
-      edwinX += 0.01;
-      edwinZ += 0.01;
+    if(rotate) {
+      // TODO calculate rotation via animatedAngle
+      //var angle = animatedAngle;
+      //if(minus) {
+      //  angle = -animatedAngle;
+      //}
+      //rotateYAx = Math.sin(angle/180);
+      if(rotateYAx < 360) {
+        rotateYAx -= 0.0025;
+      } else {
+        rotateYAx = 0.0025
+      }
     }
+
+    var edwinTransformationMatrix = glm.transform({
+        translate: position
+      });
+
+    mat4.rotateY(edwinTransformationMatrix, edwinTransformationMatrix, rotateYAx);
+
+    edwinTransformationNode.setMatrix(edwinTransformationMatrix);
   }
-
-  // if (edwinX > -5) {
-  //   rotateY -= 0.2;
-  // }
-
-  var edwinTransformationMatrix = glm.transform({
-    rotateY: rotateY,
-    rotateZ: rotateZ,
-    translate: [edwinX, edwinY, edwinZ]});
-    edwinTransformationNode.setMatrix(edwinTransformationMatrix);
-
 }
 
-function edwinDance() {
+function createKeyFrames() {
+  // fly forward keyframes
+  var t0 = quat.fromValues(edwinX, edwinY, edwinZ, 1);
+  // 0, 5, 0
+  var t3 = quat.fromValues(edwinX + 20, edwinY, edwinZ + 20, 1);
 
-  var edwinTransformationMatrix = glm.transform({
-    rotateY: animatedAngle,
-    translate: [edwinX, edwinY, edwinZ],
-    scale: [1,0.5, 5.0],});
+  // fly circle keyframes
+  var t8 = quat.fromValues(edwinX + 25, edwinY, edwinZ + 25, 1);
+  var t12 = quat.fromValues(edwinX + 20, edwinY, edwinZ + 30, 1);
+  var t17 = quat.fromValues(edwinX + 15, edwinY, edwinZ + 25, 1);
 
-    edwinTransformationNode.setMatrix(edwinTransformationMatrix);
+  // 0, 5, 0
+  var t21 = t3;
+  var t28 = quat.fromValues(13, 4.5, 10, 1);
 
+  // fall keyFrame
+  var t30 = quat.fromValues(13, 0, 10, 1);
+
+  return new Array(t0, t3, t8, t12, t17, t21, t28, t30);
 }
+
+//function edwinFlyToRoboAndDance() {
+//
+//  if (edwinX < -3 && edwinZ < -3) {
+//    edwinMoveToRobo();
+//  } else {
+//    edwinFlyInACircle();
+//  }
+//}
+//
+//function edwinFlyInACircle() {
+//      rotateY -= 1
+//
+//    var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(rotateY));
+//      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.rotateZ(rotateZ));
+//      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(edwinX,edwinY,edwinZ));
+//      edwinTransformationNode.setMatrix(robotTransformationMatrix);
+//
+//}
+//
+//function edwinMoveToRobo() {
+//
+//  edwinX += 0.01;
+//  edwinZ += 0.01;
+//
+//  if (rotateZ > -25) {
+//    rotateZ -= 0.3;
+//    edwinX += 0.01;
+//    edwinZ -= 0.015;
+//  } else {
+//    if (rotateY < 60) {
+//      rotateY += 0.1;
+//      edwinX += 0.01;
+//      edwinZ += 0.01;
+//    }
+//  }
+//
+//  // if (edwinX > -5) {
+//  //   rotateY -= 0.2;
+//  // }
+//
+//  var edwinTransformationMatrix = glm.transform({
+//    rotateY: rotateY,
+//    rotateZ: rotateZ,
+//    translate: [edwinX, edwinY, edwinZ]});
+//    edwinTransformationNode.setMatrix(edwinTransformationMatrix);
+//
+//}
+//
+//function edwinDance() {
+//
+//  var edwinTransformationMatrix = gl.pop();
+//
+//  edwinTransformationMatrix = glm.transform({
+//    rotateY: animatedAngle,
+//    translate: [edwinX, edwinY, edwinZ],
+//    scale: [1,0.5, 5.0],});
+//
+//    //edwinTransformationNode.setMatrix(edwinTransformationMatrix);
+//    gl.push(edwinTransformationMatrix);
+//
+//}
