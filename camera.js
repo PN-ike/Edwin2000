@@ -3,8 +3,11 @@ var camera;
 class Camera {
 
   constructor() {
-    this.position = vec3.fromValues(-2.65, 9, 30);
-    this.viewDirection = vec3.fromValues(0.2672, -0.345, -0.89);
+    //this.position = vec3.fromValues(-2.65, 9, 40);
+    //this.viewDirection = vec3.fromValues(0.2672, -0.345, -0.89);
+
+    this.position = vec3.fromValues(0, 0, 10);
+    this.viewDirection = vec3.fromValues(0, 0, -1);
 
     this.myUp = vec3.fromValues(0, 1, 0);
 

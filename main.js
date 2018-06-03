@@ -6,11 +6,12 @@ var shaderProgram = null;
 var canvasWidth = 2000;
 var canvasHeight = 1200;
 var aspectRatio = canvasWidth / canvasHeight;
-var near = 0.01;
-var far = 50;
+var near = 1;
+var far = 80;
 
 //rendering context
 var context;
+var circleCount = 0;
 //camera and projection settings
 var animatedAngle = 0;
 var fieldOfViewInRadians = convertDegreeToRadians(30);
@@ -106,15 +107,11 @@ function render(timeInMilliseconds) {
 
   context = createSceneGraphContext(gl, shaderProgram);
 
-  //animateRobot();
-
-    robotTransformationNode.matrix =  glm.transform({
-      rotateY: timeInMilliseconds/10
-    });
-
+  animateRobot(timeInMilliseconds);
   animateEdwin(timeInMilliseconds);
   displayText(timeInMilliseconds);
   //displayText(camera.viewDirection[0]);
+
 
   if (camera.free) {
       camera.updateViewDirection();

@@ -67,7 +67,7 @@ function createRobot(gl, resources) {
 }
 
 function animateRobot() {
-  roboDance();
+  roboWalkInACircle();
 }
 
 function roboDance() {
@@ -81,6 +81,11 @@ function roboDance() {
 //implements movement of robo, called for each frame from render()
 //turn of when working on the layout!!!
 //TODO implement circle walk with glm.tranform();
+
+function roboWalkInACircle() {
+  mat4.multiply(robotTransformationNode.matrix, mat4.create(), glm.rotateY(++circleCount));
+  mat4.multiply(robotTransformationNode.matrix, robotTransformationNode.matrix, glm.translate(3, 0,0));
+}
 
 function roboFly() {
 
