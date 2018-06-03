@@ -1,31 +1,35 @@
 var edwinTransformationNode;
-
 var edwinX = -20;
 var edwinY = 5;
 var edwinZ = -20;
+
 var rotateYAx = 45;
 var rotateOZ = 0;
 var keyFrames;
 var position;
 var callCount = 0;
 //implements edwins layout, called once from init()
-function createEdwin(rootNode) {
 
+function createEdwin(gl, resources) {
 
-  edwinTransformationNode = new TransformationSceneGraphNode(glm.transform({
-      translate: [edwinX, edwinY, edwinZ],
-      rotateOY: 0,}));
-  rootNode.append(edwinTransformationNode);
+  var edwinBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
 
+  var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
 
-  //body
-  var bodyTransformationNode =  new TransformationSceneGraphNode(glm.transform({
-      scale: [1,0.8, 5.0],
-            }));
+  edwinTransformationNode = new TransformationSGNode(mat4.create(), [
+              new TransformationSGNode(glm.transform({
+                translate: [edwinX, edwinY, edwinZ],
+                rotateY: 0}))]);
+
+  edwinBaseNode.append(edwinTransformationNode);
+
+  var bodyTransformationNode = new TransformationSGNode(mat4.create(), [
+              new TransformationSGNode(glm.transform({
+                scale: [1,0.8, 5.0]}),  [
+              cubeNode
+              ])]);
+
   edwinTransformationNode.append(bodyTransformationNode);
-
-  bodyTransformationNode.append(new CubeRenderNode());
-
 
   var leftBackWingTransformationMatrix = mat4.create();
   mat4.mul(leftBackWingTransformationMatrix, leftBackWingTransformationMatrix,makeYRotationMatrix(convertDegreeToRadians(90)));
@@ -33,11 +37,8 @@ function createEdwin(rootNode) {
   mat4.mul(leftBackWingTransformationMatrix, leftBackWingTransformationMatrix,makeYShearMatrix(0, 0.8))
   mat4.mul(leftBackWingTransformationMatrix, leftBackWingTransformationMatrix,makeTranslationMatrix(1, 0, 0.5))
   mat4.mul(leftBackWingTransformationMatrix, leftBackWingTransformationMatrix,makeScaleMatrix(1, 0.1, 2))
-  var leftBackWingTransformationNode =  new TransformationSceneGraphNode(leftBackWingTransformationMatrix);
+  var leftBackWingTransformationNode =  new TransformationSGNode(leftBackWingTransformationMatrix, cubeNode);
   edwinTransformationNode.append(leftBackWingTransformationNode);
-
-  leftBackWingTransformationNode.append(new CubeRenderNode());
-
 
   var rightBackWingTransformationMatrix = mat4.create();
   mat4.mul(rightBackWingTransformationMatrix, rightBackWingTransformationMatrix,makeYRotationMatrix(convertDegreeToRadians(90)));
@@ -45,10 +46,8 @@ function createEdwin(rootNode) {
   mat4.mul(rightBackWingTransformationMatrix, rightBackWingTransformationMatrix,makeYShearMatrix(0, -0.8))
   mat4.mul(rightBackWingTransformationMatrix, rightBackWingTransformationMatrix,makeTranslationMatrix(1, 0, -0.5))
   mat4.mul(rightBackWingTransformationMatrix, rightBackWingTransformationMatrix,makeScaleMatrix(1, 0.1, 2))
-  var rightBackWingTransformationNode =  new TransformationSceneGraphNode(rightBackWingTransformationMatrix);
+  var rightBackWingTransformationNode =  new TransformationSGNode(rightBackWingTransformationMatrix, cubeNode);
   edwinTransformationNode.append(rightBackWingTransformationNode);
-
-  rightBackWingTransformationNode.append(new CubeRenderNode());
 
   // top finn
   var finnTransformationMatrix = mat4.create();
@@ -57,35 +56,32 @@ function createEdwin(rootNode) {
   mat4.mul(finnTransformationMatrix, finnTransformationMatrix,makeZShearMatrix(-0.5, 0));
   mat4.mul(finnTransformationMatrix, finnTransformationMatrix,makeTranslationMatrix(1, 0, -0.5));
   mat4.mul(finnTransformationMatrix, finnTransformationMatrix,makeScaleMatrix(1, 0.1, 2));
-  var finnTransformationNode =  new TransformationSceneGraphNode(finnTransformationMatrix);
+  var finnTransformationNode =  new TransformationSGNode(finnTransformationMatrix, cubeNode);
   edwinTransformationNode.append(finnTransformationNode);
-
-  finnTransformationNode.append(new CubeRenderNode());
-
-  var leftWingTransformationMatrix = mat4.create();
-  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeYRotationMatrix(convertDegreeToRadians(90)));
-  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeZShearMatrix(0.5, 0));
-  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeYShearMatrix(0, 0.8));
-  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeTranslationMatrix(-0.5, 0, 1.5));
-  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeScaleMatrix(1.5, 0.1, 5));
-  var finnTransformationNode =  new TransformationSceneGraphNode(leftWingTransformationMatrix);
-  edwinTransformationNode.append(finnTransformationNode);
-
-  finnTransformationNode.append(new CubeRenderNode());
 
   var rightWingTransformationMatrix = mat4.create();
   mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeYRotationMatrix(convertDegreeToRadians(90)));
-  mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeZShearMatrix(-0.5, 0));
-  mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeYShearMatrix(0, -0.8));
-  mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeTranslationMatrix(-0.5, 0, -1.5));
+  mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeZShearMatrix(0.5, 0));
+  mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeYShearMatrix(0, 0.8));
+  mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeTranslationMatrix(-0.5, 0, 1.5));
   mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeScaleMatrix(1.5, 0.1, 5));
-  var finnTransformationNode =  new TransformationSceneGraphNode(rightWingTransformationMatrix);
-  edwinTransformationNode.append(finnTransformationNode);
+  var rightWingTransformationNode =  new TransformationSGNode(rightWingTransformationMatrix, cubeNode);
+  edwinTransformationNode.append(rightWingTransformationNode);
 
-  finnTransformationNode.append(new CubeRenderNode());
+  var leftWingTransformationMatrix = mat4.create();
+  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeYRotationMatrix(convertDegreeToRadians(90)));
+  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeZShearMatrix(-0.5, 0));
+  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeYShearMatrix(0, -0.8));
+  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeTranslationMatrix(-0.5, 0, -1.5));
+  mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeScaleMatrix(1.5, 0.1, 5));
+  var leftWingTransformationNode =  new TransformationSGNode(leftWingTransformationMatrix, cubeNode);
+  edwinTransformationNode.append(leftWingTransformationNode);
 
   // init key frames
   keyFrames = createKeyFrames();
+
+  return edwinBaseNode;
+
 }
 
 //implements movement of edwin, called for each frame from render()
@@ -182,7 +178,7 @@ if(!animationEnd) {
 
     mat4.rotateY(edwinTransformationMatrix, edwinTransformationMatrix, rotateYAx);
 
-    edwinTransformationNode.setMatrix(edwinTransformationMatrix);
+    edwinTransformationNode.matrix = edwinTransformationMatrix ;
   }
 }
 
@@ -206,65 +202,3 @@ function createKeyFrames() {
 
   return new Array(t0, t3, t8, t12, t17, t21, t28, t30);
 }
-
-//function edwinFlyToRoboAndDance() {
-//
-//  if (edwinX < -3 && edwinZ < -3) {
-//    edwinMoveToRobo();
-//  } else {
-//    edwinFlyInACircle();
-//  }
-//}
-//
-//function edwinFlyInACircle() {
-//      rotateY -= 1
-//
-//    var robotTransformationMatrix = mat4.multiply(mat4.create(), mat4.create(), glm.rotateY(rotateY));
-//      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.rotateZ(rotateZ));
-//      robotTransformationMatrix = mat4.multiply(mat4.create(), robotTransformationMatrix, glm.translate(edwinX,edwinY,edwinZ));
-//      edwinTransformationNode.setMatrix(robotTransformationMatrix);
-//
-//}
-//
-//function edwinMoveToRobo() {
-//
-//  edwinX += 0.01;
-//  edwinZ += 0.01;
-//
-//  if (rotateZ > -25) {
-//    rotateZ -= 0.3;
-//    edwinX += 0.01;
-//    edwinZ -= 0.015;
-//  } else {
-//    if (rotateY < 60) {
-//      rotateY += 0.1;
-//      edwinX += 0.01;
-//      edwinZ += 0.01;
-//    }
-//  }
-//
-//  // if (edwinX > -5) {
-//  //   rotateY -= 0.2;
-//  // }
-//
-//  var edwinTransformationMatrix = glm.transform({
-//    rotateY: rotateY,
-//    rotateZ: rotateZ,
-//    translate: [edwinX, edwinY, edwinZ]});
-//    edwinTransformationNode.setMatrix(edwinTransformationMatrix);
-//
-//}
-//
-//function edwinDance() {
-//
-//  var edwinTransformationMatrix = gl.pop();
-//
-//  edwinTransformationMatrix = glm.transform({
-//    rotateY: animatedAngle,
-//    translate: [edwinX, edwinY, edwinZ],
-//    scale: [1,0.5, 5.0],});
-//
-//    //edwinTransformationNode.setMatrix(edwinTransformationMatrix);
-//    gl.push(edwinTransformationMatrix);
-//
-//}

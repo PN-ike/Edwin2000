@@ -1,52 +1,4 @@
 
-//links to buffer stored on the GPU
-var quadVertexBuffer, quadColorBuffer;
-var cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer;
-
-var quadVertices = new Float32Array([
-    -1.0, -1.0,
-    1.0, -1.0,
-    -1.0, 1.0,
-    -1.0, 1.0,
-    1.0, -1.0,
-    1.0, 1.0]);
-
-var quadColors = new Float32Array([
-    1, 0, 0, 1,
-    0, 1, 0, 1,
-    0, 0, 1, 1,
-    0, 0, 1, 1,
-    0, 1, 0, 1,
-    0, 0, 0, 1]);
-
-var s = 0.3; //size of cube
-var cubeVertices = new Float32Array([
-   -s,-s,-s, s,-s,-s, s, s,-s, -s, s,-s,
-   -s,-s, s, s,-s, s, s, s, s, -s, s, s,
-   -s,-s,-s, -s, s,-s, -s, s, s, -s,-s, s,
-   s,-s,-s, s, s,-s, s, s, s, s,-s, s,
-   -s,-s,-s, -s,-s, s, s,-s, s, s,-s,-s,
-   -s, s,-s, -s, s, s, s, s, s, s, s,-s,
-]);
-
-var cubeColors = new Float32Array([
-   0,1,1, 0,1,1, 0,1,1, 0,1,1,
-   1,0,1, 1,0,1, 1,0,1, 1,0,1,
-   1,0,0, 1,0,0, 1,0,0, 1,0,0,
-   0,0,1, 0,0,1, 0,0,1, 0,0,1,
-   1,1,0, 1,1,0, 1,1,0, 1,1,0,
-   0,1,0, 0,1,0, 0,1,0, 0,1,0
-]);
-
-var cubeIndices =  new Float32Array([
-   0,1,2, 0,2,3,
-   4,5,6, 4,6,7,
-   8,9,10, 8,10,11,
-   12,13,14, 12,14,15,
-   16,17,18, 16,18,19,
-   20,21,22, 20,22,23
-]);
-
 const mouse = {
   pos: { x : 0, y : 0},
   leftButtonDown: false
@@ -105,36 +57,6 @@ function initInteraction(canvas) {
 
 }
 
-function initQuadBuffer() {
-
-  //create buffer for vertices
-  quadVertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexBuffer);
-  //copy data to GPU
-  gl.bufferData(gl.ARRAY_BUFFER, quadVertices, gl.STATIC_DRAW);
-
-  //same for the color
-  quadColorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, quadColorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, quadColors, gl.STATIC_DRAW);
-}
-
-function initCubeBuffer() {
-
-  cubeVertexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, cubeVertices, gl.STATIC_DRAW);
-
-  cubeColorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, cubeColors, gl.STATIC_DRAW);
-
-  cubeIndexBuffer = gl.createBuffer ();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
-}
-
-
 function toPos(event) {
   //convert to local coordinates
   const rect = gl.canvas.getBoundingClientRect();
@@ -142,4 +64,60 @@ function toPos(event) {
     x: event.clientX - rect.left,
     y: event.clientY - rect.top
   };
+}
+
+function initTexture(texture)
+{
+  //create texture object
+  var tex = gl.createTexture();
+  //select a texture unit
+  gl.activeTexture(gl.TEXTURE0);
+  //bind texture to active texture unit
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  //set sampling parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  //TASK 4: change texture sampling behaviour
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  //upload texture data
+  gl.texImage2D(gl.TEXTURE_2D, //texture unit target == texture type
+    0, //level of detail level (default 0)
+    gl.RGBA, //internal format of the data in memory
+    gl.RGBA, //image format (should match internal format)
+    gl.UNSIGNED_BYTE, //image data type
+    texture); //actual image data
+  //clean up/unbind texture
+  gl.bindTexture(gl.TEXTURE_2D, null);
+
+  return tex;
+}
+
+function initCubeTexture(textures) {
+  //create the texture
+  var cubeTexture = gl.createTexture();
+  //define some texture unit we want to work on
+  gl.activeTexture(gl.TEXTURE0);
+  //bind the texture to the texture unit
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeTexture);
+  //set sampling parameters
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.MIRRORED_REPEAT); //will be available in WebGL 2
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  //set correct image for each side of the cube map
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);//flipping required for our skybox, otherwise images don't fit together
+  gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[0]);
+  gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[1]);
+  gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[2]);
+  gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[3]);
+  gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[4]);
+  gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[5]);
+  //generate mipmaps (optional)
+  gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+  //unbind the texture again
+  gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+
+  return cubeTexture;
 }

@@ -1,160 +1,105 @@
-function createFloor(rootNode) {
-  var quadTransformationMatrix = glm.rotateX(90);
-  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.translate(0.0, 0.0 ,0));
-  quadTransformationMatrix = mat4.multiply(mat4.create(), quadTransformationMatrix, glm.scale(20,20,1));
+function createFloor(resources) {
 
-  var transformationNode = new TransformationSceneGraphNode(quadTransformationMatrix);
-  rootNode.append(transformationNode);
+  var floorBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
 
-  var staticColorShaderNode = new ShaderSceneGraphNode(createProgram(gl, staticColorVertexShader, simpleFragmentShader));
-  transformationNode.append(staticColorShaderNode);
+  var rectangleNode = new TextureSGNode(floorTexture, 2, new RenderSGNode(makeRect(2, 2)));
 
-  var quadNode = new QuadRenderNode();
-  staticColorShaderNode.append(quadNode);
+  var floorTransformationNode = new TransformationSGNode(mat4.create(), [
+              new TransformationSGNode(glm.transform({
+                scale: [20,20, 1.0],
+                rotateX: 90,
+                translate: [0, -0.9, 0]
+                }),  [rectangleNode])]);
+
+  floorBaseNode.append(floorTransformationNode);
+
+  return floorBaseNode;
+
+}
+function createClouds(resources) {
+
+      var cloudBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
+
+      cloudBaseNode.append(createCloud(0, 10, 20));
+      cloudBaseNode.append(createCloud(-7, 8, -17));
+
+      return cloudBaseNode;
 }
 
+function createCloud(x, y, z) {
+      {
+        //initialize cloud
+        let cloud = new BillboardSGNode(new TextureSGNode(cloudTexture, 2,
+                    new RenderSGNode(makeRect(1))));
 
-function createGlassWall(rootNode) {
+        var cloudTransformNode = new TransformationSGNode(glm.transform({ translate: [x,y,z]}), [
+          cloud
+        ]);
+      }
+      return cloudTransformNode;
+}
 
-    var wallTransformationNode =  new TransformationSceneGraphNode(glm.transform({
-        rotateY: 45,
-        translate: [13, 4.5, 10],
-        scale: [20, 15, 0.5]}));
-    rootNode.append(wallTransformationNode);
+function createGlassWall(resources) {
 
-    var staticColorShaderNode = new ShaderSceneGraphNode(createProgram(gl, simpleVertexShader, simpleFragmentShader));
-    wallTransformationNode.append(staticColorShaderNode);
-    wallTransformationNode.append(new WallRenderNode());
+    var wallBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
+
+    var rectangleNode = new TextureSGNode(windowTexture, 2, new RenderSGNode(makeRect(0.3, 0.3)));
+
+    var wallTransformationNode = new TransformationSGNode(mat4.create(), [
+                new TransformationSGNode(glm.transform({
+                  rotateY: 45,
+                  translate: [13, 3.6, 10],
+                  scale: [20, 15, 0.5]
+                  }),  [rectangleNode])]);
+
+    wallBaseNode.append(wallTransformationNode);
+
+    return wallBaseNode;
 }
 
 /**
- * a quad node that renders floor plane
+ * returns a new rendering context
+ * @param gl the gl context
+ * @param projectionMatrix optional projection Matrix
+ * @returns {ISceneGraphContext}
  */
-class QuadRenderNode extends SGNode {
 
-  render(context) {
 
-    //setting the model view and projection matrix on shader
-    setUpModelViewMatrix(context.sceneMatrix, context.viewMatrix);
+function createSceneGraphContext(gl, shader) {
 
-    var positionLocation = gl.getAttribLocation(context.shader, 'a_position');
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexBuffer);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(positionLocation);
+  //create a default projection matrix
+  projectionMatrix = mat4.perspective(mat4.create(), fieldOfViewInRadians, aspectRatio, near, far);
+  //set projection matrix
+  gl.uniformMatrix4fv(gl.getUniformLocation(shader, 'u_projection'), false, projectionMatrix);
 
-    var colorLocation = gl.getAttribLocation(context.shader, 'a_color');
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadColorBuffer);
-    gl.vertexAttribPointer(colorLocation, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(colorLocation);
+  return {
+    gl: gl,
+    sceneMatrix: mat4.create(),
+    viewMatrix: calculateViewMatrix(),
+    projectionMatrix: projectionMatrix,
+    shader: shader
+  };
+}
 
-    //set alpha value for blending
-    gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 1);
+//a scene graph node to enable billboarding
+class BillboardSGNode extends SGNode {
+  constructor(children) {
+      super(children);
+  }
 
-    // draw the bound data as 6 vertices = 2 triangles starting at index 0
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  render(context)
+  {
+    //enable billboarding in shader
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_billboardEnabled'), 1);
 
     //render children
     super.render(context);
+
+    //disable billboarding in shader
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_billboardEnabled'), 0);
   }
 }
 
-/**
- * a cube node that renders a cube at its local origin
- */
-class CubeRenderNode extends SGNode {
-
-  render(context) {
-
-    //setting the model view and projection matrix on shader
-    setUpModelViewMatrix(context.sceneMatrix, context.viewMatrix);
-
-    var positionLocation = gl.getAttribLocation(context.shader, 'a_position');
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
-    gl.enableVertexAttribArray(positionLocation);
-
-    var colorLocation = gl.getAttribLocation(context.shader, 'a_color');
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
-    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
-    gl.enableVertexAttribArray(colorLocation);
-
-    //set alpha value for blending
-    gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 1);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
-    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
-
-    //render children
-    super.render(context);
-  }
-}
-
-class WallRenderNode extends SGNode {
-
-  render(context) {
-
-    //setting the model view and projection matrix on shader
-    setUpModelViewMatrix(context.sceneMatrix, context.viewMatrix);
-
-    var positionLocation = gl.getAttribLocation(context.shader, 'a_position');
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
-    gl.enableVertexAttribArray(positionLocation);
-
-    var colorLocation = gl.getAttribLocation(context.shader, 'a_color');
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
-    gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
-    gl.enableVertexAttribArray(colorLocation);
-
-    //set alpha value for blending
-    gl.uniform1f(gl.getUniformLocation(context.shader, 'u_alpha'), 0.2);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
-    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
-
-    //render children
-    super.render(context);
-  }
-}
-/**
- * a transformation node, i.e applied a transformation matrix to its successors
- */
-class TransformationSceneGraphNode extends SGNode {
-  /**
-   * the matrix to apply
-   * @param matrix
-   */
-  constructor(matrix) {
-    super();
-    this.matrix = matrix || mat4.create();
-  }
-
-  render(context) {
-    //backup previous one
-    var previous = context.sceneMatrix;
-    //set current world matrix by multiplying it
-    if (previous === null) {
-      context.sceneMatrix = mat4.clone(this.matrix);
-    }
-    else {
-      context.sceneMatrix = mat4.multiply(mat4.create(), previous, this.matrix);
-    }
-
-    //render children
-    super.render(context);
-    //restore backup
-    context.sceneMatrix = previous;
-  }
-
-  setMatrix(matrix) {
-    this.matrix = matrix;
-  }
-}
-
-//TASK 5-0
-/**
- * a shader node sets a specific shader for the successors
- */
 class ShaderSceneGraphNode extends SGNode {
   /**
    * constructs a new shader node with the given shader program
@@ -184,24 +129,64 @@ class ShaderSceneGraphNode extends SGNode {
   }
 };
 
-/**
- * returns a new rendering context
- * @param gl the gl context
- * @param projectionMatrix optional projection Matrix
- * @returns {ISceneGraphContext}
- */
-function createSceneGraphContext(gl, shader) {
 
-  //create a default projection matrix
-  projectionMatrix = mat4.perspective(mat4.create(), fieldOfViewInRadians, aspectRatio, 0.01, 50);
-  //set projection matrix
-  gl.uniformMatrix4fv(gl.getUniformLocation(shader, 'u_projection'), false, projectionMatrix);
+//a scene graph node for setting texture parameters
+class TextureSGNode extends SGNode {
+  constructor(texture, textureunit, children ) {
+      super(children);
+      this.texture = texture;
+      this.textureunit = textureunit;
+  }
 
-  return {
-    gl: gl,
-    sceneMatrix: mat4.create(),
-    viewMatrix: calculateViewMatrix(),
-    projectionMatrix: projectionMatrix,
-    shader: shader
-  };
+  render(context)
+  {
+    //tell shader to use our texture; alternatively we could use two phong shaders: one with and one without texturing support
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_enableObjectTexture'), 1);
+
+
+    //set additional shader parameters
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_tex'), this.textureunit);
+
+    //activate/select texture unit and bind texture
+    gl.activeTexture(gl.TEXTURE0 + this.textureunit);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+
+    //render children
+    super.render(context);
+
+    //clean up
+    gl.activeTexture(gl.TEXTURE0 + this.textureunit); //set active texture unit since it might have changed in children render functions
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    //disable texturing in shader
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_enableObjectTexturex'), 0);
+  }
+}
+
+//a scene graph node for setting texture parameters for a cube
+class CubeTextureSGNode extends SGNode {
+
+  constructor(envtexture, textureunit , children ) {
+      super(children);
+      this.envtexture = envtexture;
+      this.textureunit = textureunit;
+  }
+
+  render(context)
+  {
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_enableCubeTexture'), 1);
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_texCube'), this.textureunit);
+
+    //activate and bind texture
+    gl.activeTexture(gl.TEXTURE0 + this.textureunit);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.envtexture);
+
+    //render children
+    super.render(context);
+
+    //clean up
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_enableCubeTexture'), 0);
+    gl.activeTexture(gl.TEXTURE0 + this.textureunit);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+  }
 }

@@ -6,22 +6,36 @@ var shaderProgram = null;
 var canvasWidth = 2000;
 var canvasHeight = 1200;
 var aspectRatio = canvasWidth / canvasHeight;
+var near = 0.01;
+var far = 50;
+
 //rendering context
 var context;
 //camera and projection settings
 var animatedAngle = 0;
 var fieldOfViewInRadians = convertDegreeToRadians(30);
-//load the shader resources using a utility function
-var simpleVertexShader;
-var simpleFragmentShader;
-var staticColorVertexShader;
-var billboardVertexShader;
+
+var textureVertexShader;
+var textureFragmentShader;
+
+var robotHeadTexture;
+var robotBodyTexture;
+var cloudTexture;
+var floorTexture;
+
+var root;
+var robotTransformationNode;
+var bodyTransformationNode;
 
 loadResources({
-  vs: 'shader/simple.vs.glsl',
-  fs: 'shader/simple.fs.glsl',
-  bvs: 'shader/billboard.vs.glsl',
-  staticcolorvs: 'shader/static_color.vs.glsl'
+  vs: 'shader/vs.glsl',
+  fs: 'shader/fs.glsl',
+  robotBodyTexture: 'models/robotBodyTexture.png',
+  robotFaceTexture: 'models/robotFaceTexture.png',
+  cloudTexture: 'models/cloud.png',
+  floorTexture: 'models/floor.png',
+  windowTexture: 'models/window.png'
+
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
 
@@ -34,36 +48,41 @@ loadResources({
  */
 function init(resources) {
 
-
-
   //create a GL context
   gl = createContext(canvasWidth, canvasHeight);
 
   //in WebGL / OpenGL3 we have to create and use our own shaders for the programmable pipeline
   //create the shader program
   shaderProgram = createProgram(gl, resources.vs, resources.fs);
-  simpleVertexShader = resources.vs;
-  simpleFragmentShader = resources.fs;
-  billboardVertexShader = resources.bvs;
-  staticColorVertexShader = resources.staticcolorvs;
 
   camera = new Camera();
 
-  //set buffers for quad
-  initQuadBuffer();
-  //set buffers for cube
-  initCubeBuffer();
+  cloudTexture = initTexture(resources.cloudTexture);
+  floorTexture = initTexture(resources.floorTexture);
+  windowTexture = initTexture(resources.windowTexture);
+
+  var textures = [resources.robotBodyTexture,
+                  resources.robotBodyTexture,
+                  resources.robotBodyTexture,
+                  resources.robotBodyTexture,
+                  resources.robotBodyTexture,
+                  resources.robotFaceTexture];
+
+  robotHeadTexture = initCubeTexture(textures);
+
+  textures[5] = resources.robotBodyTexture;
+
+  robotBodyTexture = initCubeTexture(textures);
 
   //create scenegraph
-  rootNode = new SGNode();
+  root = new SGNode();
+  root.append(createFloor(resources));
+  root.append(createRobot(gl, resources));
+  root.append(createClouds(resources));
+  root.append(createEdwin(gl, resources));
+  root.append(createGlassWall(resources));
 
-  createFloor(rootNode);
-  createRobot(rootNode);
-  createEdwin(rootNode);
-  createGlassWall(rootNode);
-
-  initInteraction(gl.canvas);
-
+initInteraction(gl.canvas);
 }
 
 /**
@@ -87,7 +106,12 @@ function render(timeInMilliseconds) {
 
   context = createSceneGraphContext(gl, shaderProgram);
 
-  animateRobot();
+  //animateRobot();
+
+    robotTransformationNode.matrix =  glm.transform({
+      rotateY: timeInMilliseconds/10
+    });
+
   animateEdwin(timeInMilliseconds);
   displayText(timeInMilliseconds);
   //displayText(camera.viewDirection[0]);
@@ -95,7 +119,8 @@ function render(timeInMilliseconds) {
   if (camera.free) {
       camera.updateViewDirection();
   }
-  rootNode.render(context);
+
+  root.render(context);
 
   //request another render call as soon as possible
   requestAnimationFrame(render);
@@ -111,7 +136,6 @@ function setUpModelViewMatrix(sceneMatrix, viewMatrix) {
 
 function calculateViewMatrix() {
 
-
   if (camera.free) {
     viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
   } else {
@@ -120,3 +144,138 @@ function calculateViewMatrix() {
   }
   return viewMatrix;
 }
+//TODO set normals correct for lighting
+function makeCube() {
+
+  var s = 0.3;
+
+   var position =
+   [-s, s, -s,
+		-s, s, s,
+		s, s, s,
+		s, s, -s,
+
+		// Left
+		-s, s, s,
+		-s, -s, s,
+		-s, -s, -s,
+		-s, s, -s,
+
+		// Right
+		s, s, s,
+		s, -s, s,
+		s, -s, -s,
+		s, s, -s,
+
+		// Front
+		s, s, s,
+		s, -s, s,
+		-s, -s, s,
+		-s, s, s,
+
+		// Back
+		s, s, -s,
+		s, -s, -s,
+		-s, -s, -s,
+		-s, s, -s,
+
+		// Bottom
+		-s, -s, -s,
+		-s, -s, s,
+		s, -s, s,
+		s, -s, -s];
+
+   var normal = [ //TODO
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1
+   ];
+   var texture = [
+     0, 0,
+     0, 1,
+     1, 1,
+     1, 0,
+
+     0, 0,
+     1, 0,
+     1, 1,
+     0, 1,
+
+     1, 1,
+     0, 1,
+     0, 0,
+     1, 0,
+
+     1, 1,
+     1, 0,
+     0, 0,
+     0, 1,
+
+     0, 0,
+     0, 1,
+     1, 1,
+     1, 0,
+
+     1, 1,
+     1, 0,
+     0, 0,
+     0, 1
+ ];
+   var index = [
+		// Top
+		0, 1, 2,
+		0, 2, 3,
+
+		// Left
+		5, 4, 6,
+		6, 4, 7,
+
+		// Right
+		8, 9, 10,
+		8, 10, 11,
+
+		// Front
+		13, 12, 14,
+		15, 14, 12,
+
+		// Back
+		16, 17, 18,
+		16, 18, 19,
+
+		// Bottom
+		21, 20, 22,
+		22, 20, 23
+	];
+   return {
+     position: position,
+     normal: normal,
+     texture: texture,
+     index: index
+   };
+ }
