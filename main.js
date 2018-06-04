@@ -7,7 +7,7 @@ var canvasWidth = 2000;
 var canvasHeight = 1200;
 var aspectRatio = canvasWidth / canvasHeight;
 var near = 1;
-var far = 80;
+var far = 150;
 
 //rendering context
 var context;
@@ -23,6 +23,7 @@ var robotHeadTexture;
 var robotBodyTexture;
 var cloudTexture;
 var floorTexture;
+var skyTexture;
 
 var root;
 var robotTransformationNode;
@@ -34,8 +35,15 @@ loadResources({
   robotBodyTexture: 'models/robotBodyTexture.png',
   robotFaceTexture: 'models/robotFaceTexture.png',
   cloudTexture: 'models/cloud.png',
-  floorTexture: 'models/floor.png',
-  windowTexture: 'models/window.png'
+  floorTexture: 'models/floor2.jpg',
+  windowTexture: 'models/window.png',
+  backTexture: 'models/miramar_bk.jpg',
+  downTexture: 'models/miramar_dn.jpg',
+  frontTexture: 'models/miramar_ft.jpg',
+  leftTexture: 'models/miramar_lf.jpg',
+  rightTexture: 'models/miramar_rt.jpg',
+  upTexture: 'models/miramar_up.jpg'
+
 
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
@@ -75,13 +83,25 @@ function init(resources) {
 
   robotBodyTexture = initCubeTexture(textures);
 
+  textures = [resources.leftTexture,
+
+                  resources.rightTexture,
+                  resources.downTexture,
+                  resources.upTexture,
+                  resources.frontTexture,
+                  resources.backTexture];
+
+  skyTexture = initCubeTexture(textures);
+
   //create scenegraph
   root = new SGNode();
+  root.append(createSky());
   root.append(createFloor(resources));
   root.append(createRobot(gl, resources));
-  root.append(createClouds(resources));
   root.append(createEdwin(gl, resources));
   root.append(createGlassWall(resources));
+  root.append(createClouds(resources));
+
 
 initInteraction(gl.canvas);
 }

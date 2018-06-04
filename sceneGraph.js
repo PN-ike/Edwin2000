@@ -9,7 +9,7 @@ function createFloor(resources) {
 
   var floorTransformationNode = new TransformationSGNode(mat4.create(), [
               new TransformationSGNode(glm.transform({
-                scale: [10, 10, 1.0],
+                scale: [22.5, 22.5, 1.0],
                 rotateX: 90,
                 translate: [0, -0.9, 0]
                 }),  [rectangleNode])]);
@@ -19,14 +19,29 @@ function createFloor(resources) {
   return floorBaseNode;
 
 }
+
+function createSky() {
+
+        var cubeNode = new CubeTextureSGNode(skyTexture, 4, new RenderSGNode(makeCube()));
+
+        var node = new TransformationSGNode(mat4.create(), [
+                    new TransformationSGNode(glm.transform({
+                        scale: [150, 150, 150],
+                        translate: [0, 15, 0],
+                        rotateZ: 180
+                      }), [cubeNode])]);
+
+          return node;
+}
+
 function createClouds(resources) {
 
       cloudBaseNode = new TransformationSGNode(mat4.create());
 
-      cloudBaseNode.append(createCloud(0, 10, 0));
-      cloudBaseNode.append(createCloud(15, 15, 0));
-      cloudBaseNode.append(createCloud(-10, 10, 0));
-      cloudBaseNode.append(createCloud(-5, 5, -30));
+      cloudBaseNode.append(createCloud(0, 20, 0));
+      cloudBaseNode.append(createCloud(15, 30, 0));
+      cloudBaseNode.append(createCloud(-10, 20, 0));
+      cloudBaseNode.append(createCloud(-5, 15, -30));
 
       return cloudBaseNode;
 }
