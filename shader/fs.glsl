@@ -1,21 +1,7 @@
-/**
- * a phong shader implementation with texture support
- */
 precision mediump float;
 
-/**
- * definition of a material structure containing common properties
- */
-struct Material {
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	vec4 emission;
-	float shininess;
-};
-
 //texture related variables
-uniform bool u_enableObjectTexture; //note: boolean flags are a simple but not the best option to handle textured and untextured objects
+uniform bool u_enableObjectTexture;
 uniform bool u_enableCubeTexture;
 
 varying vec2 v_texCoord;
@@ -26,6 +12,15 @@ uniform samplerCube u_texCube;
 varying vec3 v_position;
 
 
+struct Material {
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	vec4 emission;
+	float shininess;
+};
+
+uniform Material u_material;
 
 void main (void) {
 
@@ -39,7 +34,7 @@ void main (void) {
   }
   if (u_enableObjectTexture) {
     //texture lookup
-    gl_FragColor =  texture2D(u_tex, v_texCoord); //replace me for TASK 1 and remove me for TASK 2!!!
+    gl_FragColor =  texture2D(u_tex, v_texCoord);
     return;
   }
 

@@ -8,7 +8,8 @@ var roboZ = 0;
 
 function createRobot(gl, resources) {
   //create scenegraph
-  var robotBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
+  var robotBaseNode = new  MaterialSGNode();
+  //TODO define Material
 
   var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
 

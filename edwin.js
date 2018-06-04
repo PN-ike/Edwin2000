@@ -12,7 +12,8 @@ var callCount = 0;
 
 function createEdwin(gl, resources) {
 
-  var edwinBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
+  var edwinBaseNode = new MaterialSGNode();
+  //TODO define Material
 
   var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
 
