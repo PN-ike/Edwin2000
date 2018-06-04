@@ -3,6 +3,7 @@ var cloudBaseNode;
 function createFloor(resources) {
 
   var floorBaseNode = new  MaterialSGNode();
+  //TODO define Material
 
   var rectangleNode = new TextureSGNode(floorTexture, 2, new RenderSGNode(makeRect(2, 2)));
 
@@ -46,6 +47,7 @@ function createCloud(x, y, z) {
 function createGlassWall(resources) {
 
     var wallBaseNode = new  MaterialSGNode();
+    //TODO define Material
 
     var rectangleNode = new TextureSGNode(windowTexture, 2, new RenderSGNode(makeRect(0.3, 0.3)));
 
