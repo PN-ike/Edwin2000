@@ -1,3 +1,5 @@
+var cloudBaseNode;
+
 function createFloor(resources) {
 
   var floorBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
@@ -6,7 +8,7 @@ function createFloor(resources) {
 
   var floorTransformationNode = new TransformationSGNode(mat4.create(), [
               new TransformationSGNode(glm.transform({
-                scale: [20,20, 1.0],
+                scale: [10, 10, 1.0],
                 rotateX: 90,
                 translate: [0, -0.9, 0]
                 }),  [rectangleNode])]);
@@ -18,10 +20,12 @@ function createFloor(resources) {
 }
 function createClouds(resources) {
 
-      var cloudBaseNode = new ShaderSGNode(createProgram(gl, resources.vs, resources.fs));
+      cloudBaseNode = new TransformationSGNode(mat4.create());
 
-      cloudBaseNode.append(createCloud(0, 10, 20));
-      cloudBaseNode.append(createCloud(-7, 8, -17));
+      cloudBaseNode.append(createCloud(0, 10, 0));
+      cloudBaseNode.append(createCloud(15, 15, 0));
+      cloudBaseNode.append(createCloud(-10, 10, 0));
+      cloudBaseNode.append(createCloud(-5, 5, -30));
 
       return cloudBaseNode;
 }
