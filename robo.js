@@ -1,5 +1,7 @@
 var robotTransformationNode;
-
+var headTransformationNode;
+var rightArmTransformationNode;
+var leftArmTransformationNode
 var roboX = 0;
 var roboY = 0;
 var roboZ = 0;
@@ -21,17 +23,6 @@ function createRobot(gl, resources) {
 
   robotBaseNode.append(robotTransformationNode);
 
-  var antennaTransformationNode = new TransformationSGNode(mat4.create(), [
-              new TransformationSGNode(glm.transform({
-                rotateY: animatedAngle,
-                translate: [0.07, 0.5, 0.1],
-                scale: [0.1, 0.5, 0.1]}),  [
-              cubeNode
-              ])]);
-
-  robotTransformationNode.append(antennaTransformationNode);
-
-
     //left leg
     var leftLegTransformationNode = new TransformationSGNode(mat4.create(), [
                 new TransformationSGNode(glm.transform({
@@ -50,7 +41,36 @@ function createRobot(gl, resources) {
                 cubeNode
                   ])]);
 
-        robotTransformationNode.append(rightLegTransformationNode);
+    robotTransformationNode.append(rightLegTransformationNode);
+
+    rightArmTransformationNode = new TransformationSGNode(mat4.create(), [
+                new TransformationSGNode(glm.transform({
+                translate: [-0.4, 0, 0],
+                scale: [.8,.3,.3]
+              }),  [
+                cubeNode
+              ])]);
+
+    robotTransformationNode.append(rightArmTransformationNode);
+
+
+    leftArmTransformationNode = new TransformationSGNode(mat4.create(), [
+                new TransformationSGNode(glm.transform({
+                translate: [0.4, 0, 0],
+                scale: [.8,.3,.3]
+              }),  [
+                cubeNode
+              ])]);
+
+    robotTransformationNode.append(leftArmTransformationNode);
+
+    var antennaTransformationNode = new TransformationSGNode(mat4.create(), [
+                new TransformationSGNode(glm.transform({
+                rotateY: animatedAngle,
+                translate: [0.07, 0.5, 0.1],
+                scale: [0.1, 0.5, 0.1]}),  [
+                cubeNode
+              ])]);
 
   cubeNode = new CubeTextureSGNode(robotHeadTexture, 4,
                   new RenderSGNode(makeCube()));
@@ -64,10 +84,16 @@ function createRobot(gl, resources) {
 
   robotTransformationNode.append(headTransformationNode);
 
+  headTransformationNode.append(antennaTransformationNode);
+
   return robotBaseNode;
 }
 
 function animateRobot() {
+  mat4.multiply(headTransformationNode.matrix, mat4.create(), glm.rotateY(++circleCount*2));
+  mat4.multiply(leftArmTransformationNode.matrix, mat4.create(), glm.rotateX(circleCount*3));
+  mat4.multiply(rightArmTransformationNode.matrix, mat4.create(), glm.rotateX(circleCount*3));
+
   roboWalkInACircle();
 }
 
@@ -79,12 +105,9 @@ function roboDance() {
   });
 }
 
-//implements movement of robo, called for each frame from render()
-//turn of when working on the layout!!!
-//TODO implement circle walk with glm.tranform();
-
 function roboWalkInACircle() {
-  mat4.multiply(robotTransformationNode.matrix, mat4.create(), glm.rotateY(++circleCount));
+
+  mat4.multiply(robotTransformationNode.matrix, mat4.create(), glm.rotateY(circleCount*2));
   mat4.multiply(robotTransformationNode.matrix, robotTransformationNode.matrix, glm.translate(3, 0,0));
 }
 

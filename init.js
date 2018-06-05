@@ -45,8 +45,8 @@ function initInteraction(canvas) {
            //substract to get inverted movement
           camera.yDegree += delta.x*.25; // if we have a x-delta we want to rotate around y
           camera.xDegree += delta.y*.25; // multipy with 0.25 for pixel to Degree conversion
-          camera.xDegree = Math.min(90, camera.xDegree);
-          camera.xDegree = Math.max(-90, camera.xDegree);
+          camera.xDegree = Math.min(45, camera.xDegree);
+          camera.xDegree = Math.max(-45, camera.xDegree);
         }
         mouse.pos = pos;
       });

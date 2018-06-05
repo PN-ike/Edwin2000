@@ -14,7 +14,7 @@ var context;
 var circleCount = 0;
 //camera and projection settings
 var animatedAngle = 0;
-var fieldOfViewInRadians = convertDegreeToRadians(30);
+var fieldOfViewInRadians = convertDegreeToRadians(60);
 
 var textureVertexShader;
 var textureFragmentShader;
