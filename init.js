@@ -8,6 +8,7 @@ function initInteraction(canvas) {
 
   document.addEventListener('keypress', function(event) {
     //listen for key event globally
+
     if(event.code === 'KeyW'){
       camera.moveForward();
     }
@@ -41,7 +42,7 @@ function initInteraction(canvas) {
       canvas.addEventListener('mousemove', function(event) {
         const pos = toPos(event);
         const delta = { x : mouse.pos.x - pos.x, y: mouse.pos.y - pos.y };
-        if (mouse.leftButtonDown) {
+        if (mouse.leftButtonDown && camera.free) {
            //substract to get inverted movement
           camera.yDegree += delta.x*.25; // if we have a x-delta we want to rotate around y
           camera.xDegree += delta.y*.25; // multipy with 0.25 for pixel to Degree conversion

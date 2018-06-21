@@ -27,7 +27,9 @@ var skyTexture;
 
 var root;
 var robotTransformationNode;
-var bodyTransformationNode;
+var bodyTransformationNode
+
+var cameraFlight = true;
 
 loadResources({
   vs: 'shader/vs.glsl',
@@ -127,6 +129,7 @@ function init(resources) {
     rotateLight2 = new TransformationSGNode(mat4.create(), [
         light2
     ]);
+
     root.append(rotateLight2);
   }
   root.append(createSky());
@@ -175,6 +178,9 @@ function render(timeInMilliseconds) {
   mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
   mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(10, 12,0));
 
+  if(!camera.free && cameraFlight) {
+    animateCamera(camera, timeInMilliseconds);
+  }
 
   if (camera.free) {
       camera.updateViewDirection();
