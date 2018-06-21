@@ -33,7 +33,7 @@ var cameraFlight = true;
 
 var fireTexture;
 
-var nParticles = 200;
+var nParticles = 10;
 
 var psTextureNode = new Array (nParticles);
 var psTransformationNode = new Array(nParticles);
@@ -60,7 +60,7 @@ loadResources({
   leftTexture: 'models/miramar_lf.jpg',
   rightTexture: 'models/miramar_rt.jpg',
   upTexture: 'models/miramar_up.jpg',
-  fireTexture: 'models/fireParticle.png'
+  fireTexture: 'models/fireParticle2.png'
 
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
@@ -112,6 +112,7 @@ function init(resources) {
 
   //create scenegraph
   root =  new SGNode();
+
   //TODO remove sun from sky
 //TODO check matiarl2 u_mat2?????
     {
@@ -123,7 +124,7 @@ function init(resources) {
       light.position = [0, 0, 0];
 
       rotateLight = new TransformationSGNode(mat4.create());
-       let translateLight = new TransformationSGNode(glm.translate(0,0,0)); //translating the light is the same as setting the light position
+       let translateLight = new TransformationSGNode(glm.translate(0,-1,0)); //translating the light is the same as setting the light position
 
       translateLight.append(light);
       translateLight.append(createLightSphere(resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
@@ -153,35 +154,40 @@ function init(resources) {
   root.append(createGlassWall(resources));
   root.append(createClouds(resources));
 
-  var i;
-for (i = 0; i < nParticles; i++) {
-
-  lifeTime[i] = Math.random()/2;
-  console.log(lifeTime[i]);
 
 
-  let transparentSGNode = new TransparentSGNode()
-  let psBillboardNode = new BillboardSGNode();
-  psTextureNode[i] = new TextureSGNode(fireTexture, 2, new RenderSGNode(makeRect(.005, .005)));
+    var i;
+    for (i = 0; i < nParticles; i++) {
 
-  psBillboardNode.append(psTextureNode[i]);
+      lifeTime[i] = Math.random()*2;
+      console.log(lifeTime[i]);
 
-  particleX[i] = 0 + (Math.random() -5)/10
-  particleY[i] = 0
-  particleZ[i] = 0 + (Math.random()-5)/10
+      psTextureNode[i] = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(fireTexture, 2,
+                  new RenderSGNode(makeRect(.02, .02))))));
 
-  console.log(particleX[i]);
+      //let transparentSGNode = new TransparentSGNode()
+      //let psBillboardNode = new BillboardSGNode();
+      //psTextureNode[i] = new TextureSGNode(fireTexture, 2, new RenderSGNode(makeRect(.005, .005)));
+
+      //psBillboardNode.append(transparentSGNode);
+      //transparentSGNode.append(psTextureNode[i]);
 
 
-  psTransformationNode[i] = new TransformationSGNode(mat4.create(), [
-              new TransformationSGNode(glm.transform({
-                translate: [particleX[i], particleY[i], particleZ[i]]
-              }),  [psBillboardNode])]);
+      particleX[i] = 0 + (Math.random() -5)/10
+      particleY[i] = -1
+      particleZ[i] = 0 + (Math.random()-5)/10
 
-  root.append(psTransformationNode[i]);
+      console.log(particleX[i]);
 
-  }
 
+      psTransformationNode[i] = new TransformationSGNode(mat4.create(), [
+                  new TransformationSGNode(glm.transform({
+                    translate: [particleX[i], particleY[i], particleZ[i]]
+                  }),  [psTextureNode[i]])]);
+
+      root.append(psTransformationNode[i]);
+
+      }
 
 initInteraction(gl.canvas);
 }
@@ -218,14 +224,11 @@ function render(timeInMilliseconds) {
 
   // particle system
   for (let i = 0; i < nParticles; i++) {
-    //psTextureNode[i].texture = fireTexture;
-
     if (particleY[i] < lifeTime[i]) {
       particleY[i] += 0.003;
     } else {
       particleY[i] = 0;
     }
-
 
     psTransformationNode[i].matrix = glm.transform({
       translate: [particleX[i], particleY[i], particleZ[i]]
@@ -268,138 +271,3 @@ function calculateViewMatrix() {
   }
   return viewMatrix;
 }
-
-function makeCube() {
-
-  var s = 0.3;
-
-   var position =
-   [-s, s, -s,
-		-s, s, s,
-		s, s, s,
-		s, s, -s,
-
-		// Left
-		-s, s, s,
-		-s, -s, s,
-		-s, -s, -s,
-		-s, s, -s,
-
-		// Right
-		s, s, s,
-		s, -s, s,
-		s, -s, -s,
-		s, s, -s,
-
-		// Front
-		s, s, s,
-		s, -s, s,
-		-s, -s, s,
-		-s, s, s,
-
-		// Back
-		s, s, -s,
-		s, -s, -s,
-		-s, -s, -s,
-		-s, s, -s,
-
-		// Bottom
-		-s, -s, -s,
-		-s, -s, s,
-		s, -s, s,
-		s, -s, -s];
-
-   var normal = [
-     0, 1, 0,
-     0, 1, 0,
-     0, 1, 0,
-     0, 1, 0,
-
-     -1, 0, 0,
-     -1, 0, 0,
-     -1, 0, 0,
-     -1, 0, 0,
-
-     1, 0, 0,
-     1, 0, 0,
-     1, 0, 0,
-     1, 0, 0,
-
-     0, 0, -1,
-     0, 0, -1,
-     0, 0, -1,
-     0, 0, -1,
-
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-
-     0, -1, 0,
-     0, -1, 0,
-     0, -1, 0,
-     0, -1, 0
-   ];
-   var texture = [
-     0, 0,
-     0, 1,
-     1, 1,
-     1, 0,
-
-     0, 0,
-     1, 0,
-     1, 1,
-     0, 1,
-
-     1, 1,
-     0, 1,
-     0, 0,
-     1, 0,
-
-     1, 1,
-     1, 0,
-     0, 0,
-     0, 1,
-
-     0, 0,
-     0, 1,
-     1, 1,
-     1, 0,
-
-     1, 1,
-     1, 0,
-     0, 0,
-     0, 1
- ];
-   var index = [
-		// Top
-		0, 1, 2,
-		0, 2, 3,
-
-		// Left
-		5, 4, 6,
-		6, 4, 7,
-
-		// Right
-		8, 9, 10,
-		8, 10, 11,
-
-		// Front
-		13, 12, 14,
-		15, 14, 12,
-
-		// Back
-		16, 17, 18,
-		16, 18, 19,
-
-		// Bottom
-		21, 20, 22,
-		22, 20, 23
-	];
-   return {
-     position: position,
-     normal: normal,
-     texture: texture,
-     index: index
-   };
- }

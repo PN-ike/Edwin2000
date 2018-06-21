@@ -122,3 +122,138 @@ function initCubeTexture(textures) {
 
   return cubeTexture;
 }
+
+function makeCube() {
+
+  var s = 0.3;
+
+   var position =
+   [-s, s, -s,
+		-s, s, s,
+		s, s, s,
+		s, s, -s,
+
+		// Left
+		-s, s, s,
+		-s, -s, s,
+		-s, -s, -s,
+		-s, s, -s,
+
+		// Right
+		s, s, s,
+		s, -s, s,
+		s, -s, -s,
+		s, s, -s,
+
+		// Front
+		s, s, s,
+		s, -s, s,
+		-s, -s, s,
+		-s, s, s,
+
+		// Back
+		s, s, -s,
+		s, -s, -s,
+		-s, -s, -s,
+		-s, s, -s,
+
+		// Bottom
+		-s, -s, -s,
+		-s, -s, s,
+		s, -s, s,
+		s, -s, -s];
+
+   var normal = [
+     0, 1, 0,
+     0, 1, 0,
+     0, 1, 0,
+     0, 1, 0,
+
+     -1, 0, 0,
+     -1, 0, 0,
+     -1, 0, 0,
+     -1, 0, 0,
+
+     1, 0, 0,
+     1, 0, 0,
+     1, 0, 0,
+     1, 0, 0,
+
+     0, 0, -1,
+     0, 0, -1,
+     0, 0, -1,
+     0, 0, -1,
+
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+     0, 0, 1,
+
+     0, -1, 0,
+     0, -1, 0,
+     0, -1, 0,
+     0, -1, 0
+   ];
+   var texture = [
+     0, 0,
+     0, 1,
+     1, 1,
+     1, 0,
+
+     0, 0,
+     1, 0,
+     1, 1,
+     0, 1,
+
+     1, 1,
+     0, 1,
+     0, 0,
+     1, 0,
+
+     1, 1,
+     1, 0,
+     0, 0,
+     0, 1,
+
+     0, 0,
+     0, 1,
+     1, 1,
+     1, 0,
+
+     1, 1,
+     1, 0,
+     0, 0,
+     0, 1
+ ];
+   var index = [
+		// Top
+		0, 1, 2,
+		0, 2, 3,
+
+		// Left
+		5, 4, 6,
+		6, 4, 7,
+
+		// Right
+		8, 9, 10,
+		8, 10, 11,
+
+		// Front
+		13, 12, 14,
+		15, 14, 12,
+
+		// Back
+		16, 17, 18,
+		16, 18, 19,
+
+		// Bottom
+		21, 20, 22,
+		22, 20, 23
+	];
+   return {
+     position: position,
+     normal: normal,
+     texture: texture,
+     index: index
+   };
+ }
