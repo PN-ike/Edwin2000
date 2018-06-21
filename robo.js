@@ -11,7 +11,12 @@ var roboZ = 0;
 function createRobot(gl, resources) {
   //create scenegraph
   var robotBaseNode = new  MaterialSGNode();
-  //TODO define Material
+
+  robotBaseNode.ambient = [0.24725, 0.1995, 0.0745, 1];
+  robotBaseNode.diffuse = [0.75164, 0.60648, 0.22648, 1];
+  robotBaseNode.specular = [0.628281, 0.555802, 0.366065, 1];
+  robotBaseNode.shininess = 4;
+
 
   var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
 

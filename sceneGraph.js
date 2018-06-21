@@ -3,7 +3,12 @@ var cloudBaseNode;
 function createFloor(resources) {
 
   var floorBaseNode = new  MaterialSGNode();
-  //TODO define Material
+
+      //dark
+      floorBaseNode.ambient = [0, 0, 0, 1];
+      floorBaseNode.diffuse = [0.1, 0.1, 0.1, 1];
+      floorBaseNode.specular = [0.3, 0.3, 0.3, 1];
+      floorBaseNode.shininess = 10;
 
   var rectangleNode = new TextureSGNode(floorTexture, 2, new RenderSGNode(makeRect(2, 2)));
 
@@ -22,7 +27,7 @@ function createFloor(resources) {
 
 function createSky() {
 
-        var cubeNode = new CubeTextureSGNode(skyTexture, 4, new RenderSGNode(makeCube()));
+        var cubeNode = new TransparentSGNode(new CubeTextureSGNode(skyTexture, 4, new RenderSGNode(makeCube())));
 
         var node = new TransformationSGNode(mat4.create(), [
                     new TransformationSGNode(glm.transform({
@@ -49,8 +54,8 @@ function createClouds(resources) {
 function createCloud(x, y, z) {
       {
         //initialize cloud
-        let cloud = new BillboardSGNode(new TextureSGNode(cloudTexture, 2,
-                    new RenderSGNode(makeRect(1))));
+        let cloud = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(cloudTexture, 2,
+                    new RenderSGNode(makeRect(1))))));
 
         var cloudTransformNode = new TransformationSGNode(glm.transform({ translate: [x,y,z]}), [
           cloud
@@ -64,7 +69,7 @@ function createGlassWall(resources) {
     var wallBaseNode = new  MaterialSGNode();
     //TODO define Material
 
-    var rectangleNode = new TextureSGNode(windowTexture, 2, new RenderSGNode(makeRect(0.3, 0.3)));
+    var rectangleNode =new TransparentSGNode( new TextureSGNode(windowTexture, 2, new RenderSGNode(makeRect(0.3, 0.3))));
 
     var wallTransformationNode = new TransformationSGNode(mat4.create(), [
                 new TransformationSGNode(glm.transform({
@@ -120,6 +125,25 @@ class BillboardSGNode extends SGNode {
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_billboardEnabled'), 0);
   }
 }
+
+class TransparentSGNode extends SGNode {
+  constructor(children) {
+      super(children);
+  }
+
+  render(context)
+  {
+    //enable billboarding in shader
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_transparent'), 1);
+
+    //render children
+    super.render(context);
+
+    //disable billboarding in shader
+    gl.uniform1i(gl.getUniformLocation(context.shader, 'u_transparent'), 0);
+  }
+}
+
 
 class ShaderSceneGraphNode extends SGNode {
   /**

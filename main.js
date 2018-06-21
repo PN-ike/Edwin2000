@@ -18,7 +18,7 @@ var fieldOfViewInRadians = convertDegreeToRadians(60);
 
 var textureVertexShader;
 var textureFragmentShader;
-
+var rotateLight2;
 var robotHeadTexture;
 var robotBodyTexture;
 var cloudTexture;
@@ -32,6 +32,8 @@ var bodyTransformationNode;
 loadResources({
   vs: 'shader/vs.glsl',
   fs: 'shader/fs.glsl',
+  vs_single: 'shader/single.vs.glsl',
+  fs_single: 'shader/single.fs.glsl',
   robotBodyTexture: 'models/robotBodyTexture.png',
   robotFaceTexture: 'models/robotFaceTexture.png',
   cloudTexture: 'models/cloud.png',
@@ -84,7 +86,6 @@ function init(resources) {
   robotBodyTexture = initCubeTexture(textures);
 
   textures = [resources.leftTexture,
-
                   resources.rightTexture,
                   resources.downTexture,
                   resources.upTexture,
@@ -94,7 +95,40 @@ function init(resources) {
   skyTexture = initCubeTexture(textures);
 
   //create scenegraph
-  root = new SGNode();
+  root =  new SGNode();
+  //TODO remove sun from sky
+//TODO check matiarl2 u_mat2?????
+    {
+      //initialize light
+      let light = new LightSGNode(); //use now framework implementation of light node
+
+      light.diffuse = [1, 0, 0, 1];
+      light.specular = [1, 0, 0, 1];
+      light.position = [0, 0, 0];
+
+      rotateLight = new TransformationSGNode(mat4.create());
+       let translateLight = new TransformationSGNode(glm.translate(0,0,0)); //translating the light is the same as setting the light position
+
+      translateLight.append(light);
+      translateLight.append(createLightSphere(resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
+      root.append(translateLight);
+    }
+
+
+  {
+    //TASK 5-1 create red light node at [2, 0.2, 0]
+    let light2 = new LightSGNode();
+    light2.uniform = 'u_light2';
+    light2.ambient = [0.8, 0.8, 0.8, 1];
+    light2.diffuse = [1, 1, 1, 1];
+    light2.specular = [1, 1, 1, 1];
+    light2.position = [2, -0.5, 0];
+    light2.append(createLightSphere(resources));
+    rotateLight2 = new TransformationSGNode(mat4.create(), [
+        light2
+    ]);
+    root.append(rotateLight2);
+  }
   root.append(createSky());
   root.append(createFloor(resources));
   root.append(createRobot(gl, resources));
@@ -106,6 +140,11 @@ function init(resources) {
 initInteraction(gl.canvas);
 }
 
+function createLightSphere(resources) {
+    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [
+      new RenderSGNode(makeSphere(.2,10,10))
+    ]);
+  }
 /**
  * render one frame
  */
@@ -131,6 +170,10 @@ function render(timeInMilliseconds) {
   animateEdwin(timeInMilliseconds);
   displayText(timeInMilliseconds);
   //displayText(camera.viewDirection[0]);
+
+
+  mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
+  mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(10, 12,0));
 
 
   if (camera.free) {
@@ -161,7 +204,7 @@ function calculateViewMatrix() {
   }
   return viewMatrix;
 }
-//TODO set normals correct for lighting
+
 function makeCube() {
 
   var s = 0.3;
@@ -202,36 +245,36 @@ function makeCube() {
 		s, -s, s,
 		s, -s, -s];
 
-   var normal = [ //TODO
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
+   var normal = [
+     0, 1, 0,
+     0, 1, 0,
+     0, 1, 0,
+     0, 1, 0,
+
+     -1, 0, 0,
+     -1, 0, 0,
+     -1, 0, 0,
+     -1, 0, 0,
+
+     1, 0, 0,
+     1, 0, 0,
+     1, 0, 0,
+     1, 0, 0,
+
+     0, 0, -1,
+     0, 0, -1,
+     0, 0, -1,
+     0, 0, -1,
 
      0, 0, 1,
      0, 0, 1,
      0, 0, 1,
      0, 0, 1,
 
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1,
-     0, 0, 1
+     0, -1, 0,
+     0, -1, 0,
+     0, -1, 0,
+     0, -1, 0
    ];
    var texture = [
      0, 0,

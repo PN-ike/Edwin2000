@@ -13,8 +13,11 @@ var callCount = 0;
 function createEdwin(gl, resources) {
 
   var edwinBaseNode = new MaterialSGNode();
-  //TODO define Material
 
+    edwinBaseNode.ambient = [0.24725, 0.1995, 0.0745, 1];
+    edwinBaseNode.diffuse = [0.75164, 0.60648, 0.22648, 1];
+    edwinBaseNode.specular = [0.628281, 0.555802, 0.366065, 1];
+    edwinBaseNode.shininess = 10;
   var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
 
   edwinTransformationNode = new TransformationSGNode(mat4.create(), [
