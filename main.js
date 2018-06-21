@@ -31,6 +31,19 @@ var bodyTransformationNode
 
 var cameraFlight = true;
 
+var fireTexture;
+
+var nParticles = 200;
+
+var psTextureNode = new Array (nParticles);
+var psTransformationNode = new Array(nParticles);
+
+var lifeTime = new Array(nParticles);
+
+var particleX = new Array(nParticles);
+var particleY = new Array(nParticles);
+var particleZ = new Array(nParticles);
+
 loadResources({
   vs: 'shader/vs.glsl',
   fs: 'shader/fs.glsl',
@@ -46,8 +59,8 @@ loadResources({
   frontTexture: 'models/miramar_ft.jpg',
   leftTexture: 'models/miramar_lf.jpg',
   rightTexture: 'models/miramar_rt.jpg',
-  upTexture: 'models/miramar_up.jpg'
-
+  upTexture: 'models/miramar_up.jpg',
+  fireTexture: 'models/fireParticle.png'
 
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
@@ -73,6 +86,7 @@ function init(resources) {
   cloudTexture = initTexture(resources.cloudTexture);
   floorTexture = initTexture(resources.floorTexture);
   windowTexture = initTexture(resources.windowTexture);
+  fireTexture = initTexture(resources.fireTexture);
 
   var textures = [resources.robotBodyTexture,
                   resources.robotBodyTexture,
@@ -139,6 +153,35 @@ function init(resources) {
   root.append(createGlassWall(resources));
   root.append(createClouds(resources));
 
+  var i;
+for (i = 0; i < nParticles; i++) {
+
+  lifeTime[i] = Math.random()/2;
+  console.log(lifeTime[i]);
+
+
+  let transparentSGNode = new TransparentSGNode()
+  let psBillboardNode = new BillboardSGNode();
+  psTextureNode[i] = new TextureSGNode(fireTexture, 2, new RenderSGNode(makeRect(.005, .005)));
+
+  psBillboardNode.append(psTextureNode[i]);
+
+  particleX[i] = 0 + (Math.random() -5)/10
+  particleY[i] = 0
+  particleZ[i] = 0 + (Math.random()-5)/10
+
+  console.log(particleX[i]);
+
+
+  psTransformationNode[i] = new TransformationSGNode(mat4.create(), [
+              new TransformationSGNode(glm.transform({
+                translate: [particleX[i], particleY[i], particleZ[i]]
+              }),  [psBillboardNode])]);
+
+  root.append(psTransformationNode[i]);
+
+  }
+
 
 initInteraction(gl.canvas);
 }
@@ -172,7 +215,22 @@ function render(timeInMilliseconds) {
   animateRobot(timeInMilliseconds);
   animateEdwin(timeInMilliseconds);
   displayText(timeInMilliseconds);
-  //displayText(camera.viewDirection[0]);
+
+  // particle system
+  for (let i = 0; i < nParticles; i++) {
+    //psTextureNode[i].texture = fireTexture;
+
+    if (particleY[i] < lifeTime[i]) {
+      particleY[i] += 0.003;
+    } else {
+      particleY[i] = 0;
+    }
+
+
+    psTransformationNode[i].matrix = glm.transform({
+      translate: [particleX[i], particleY[i], particleZ[i]]
+    });
+  }
 
 
   mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
