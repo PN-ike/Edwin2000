@@ -15,8 +15,6 @@ var cameraFlight = true;
 // root of the scenegraph
 var root;
 
-//var textureVertexShader;
-//var textureFragmentShader;
 // texture variables
 var robotHeadTexture;
 var robotBodyTexture;
@@ -113,7 +111,6 @@ function init(resources) {
   root =  new SGNode();
 
   //TODO remove sun from sky
-//TODO check matiarl2 u_mat2?????
     {
       //initialize light
       let light = new LightSGNode(); //use now framework implementation of light node
