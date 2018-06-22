@@ -24,6 +24,8 @@ var cloudTexture;
 var floorTexture;
 var skyTexture;
 var fireTexture;
+var endCloudTexture;
+var metalTexture;
 
 // variables for animation
 var circleCount = 0;
@@ -60,6 +62,9 @@ loadResources({
   rightTexture: 'models/miramar_rt.jpg',
   upTexture: 'models/miramar_up.jpg',
   fireTexture: 'models/fireParticle2.png',
+  endCloudTexture: 'models/cloudTheEnd.png',
+  metalTexture: 'models/metal.jpg',
+
   bonfireModel: 'models/bonfire.obj',
   c3poModel: 'models/C-3PO.obj'
 
@@ -86,6 +91,7 @@ function init(resources) {
   floorTexture = initTexture(resources.floorTexture);
   windowTexture = initTexture(resources.windowTexture);
   fireTexture = initTexture(resources.fireTexture);
+  endCloudTexture = initTexture(resources.endCloudTexture);
 
   var textures = [resources.robotBodyTexture,
                   resources.robotBodyTexture,
@@ -109,11 +115,20 @@ function init(resources) {
 
   skyTexture = initCubeTexture(textures);
 
+
+  textures = [resources.metalTexture,
+                  resources.metalTexture,
+                  resources.metalTexture,
+                  resources.metalTexture,
+                  resources.metalTexture,
+                  resources.metalTexture];
+
+  metalTexture = initCubeTexture(textures);
+
   //create scenegraph
   root =  new SGNode();
 
   //TODO remove sun from sky
-//TODO check matiarl2 u_mat2?????
     {
       //initialize light
       let light = new LightSGNode(); //use now framework implementation of light node

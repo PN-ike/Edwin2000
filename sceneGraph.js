@@ -43,18 +43,18 @@ function createClouds(resources) {
 
       cloudBaseNode = new TransformationSGNode(mat4.create());
 
-      cloudBaseNode.append(createCloud(5, 20, 0));
-      cloudBaseNode.append(createCloud(15, 30, 0));
-      cloudBaseNode.append(createCloud(-10, 20, 0));
-      cloudBaseNode.append(createCloud(-5, 15, -30));
+      cloudBaseNode.append(createCloud(5, 20, 0, endCloudTexture));
+      cloudBaseNode.append(createCloud(15, 30, 0, cloudTexture));
+      cloudBaseNode.append(createCloud(-10, 20, 0, cloudTexture));
+      cloudBaseNode.append(createCloud(-5, 15, -30, cloudTexture));
 
       return cloudBaseNode;
 }
 
-function createCloud(x, y, z) {
+function createCloud(x, y, z, texture) {
       {
         //initialize cloud
-        let cloud = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(cloudTexture, 2,
+        let cloud = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(texture, 2,
                     new RenderSGNode(makeRect(1))))));
 
         var cloudTransformNode = new TransformationSGNode(glm.transform({ translate: [x,y,z]}), [

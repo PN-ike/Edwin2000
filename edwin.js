@@ -21,7 +21,7 @@ function createEdwin(gl, resources) {
     edwinBaseNode.shininess = 10;
 
   // set edwins texture
-  var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
+  var cubeNode = new CubeTextureSGNode(metalTexture, 4, new RenderSGNode(makeCube()));
 
   // set edwins starting position
   edwinTransformationNode = new TransformationSGNode(mat4.create(), [
