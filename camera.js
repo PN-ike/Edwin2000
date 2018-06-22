@@ -133,6 +133,32 @@ function animateCamera(camera, timeInMilliseconds) {
   let xDegreeOffset = 0;
   let yDegreeOffset = 0;
 
+  if(timeInMilliseconds <= 2000) {
+    displayText('t'
+                + Math.round(timeInMilliseconds/1000)
+                + '\n Billboard: Wolke rechts oben \n Skymap \n Materialien: Edwin (Chrome) \n Boden (Dunkel)\n Texturen: Cube-texture auf Edwin und 2D Textur auf dem Boden \n Animation: Edwin \n Komplexes Modell: Edwin \n Shading: Edwin');
+  } else if(timeInMilliseconds <= 3000) {
+    displayText('t'
+                + Math.round(timeInMilliseconds/1000)
+                + '\n Materialien: Edwin (Chrome) \n Boden (Dunkel)\n Texturen: Cube-texture auf Edwin und 2D Textur auf dem Boden \n Animation: Edwin \n Komplexes Modell: Edwin \n Shading: Edwin');
+
+  } else if(timeInMilliseconds <= 8000){
+      displayText('t'
+                  + Math.round(timeInMilliseconds/1000)
+                  + '\n particle system \n Materialien: Edwin (Chrome) \n Boden (Dunkel)\n Texturen: Cube-texture auf Edwin und 2D Textur auf dem Boden \n Animation: Edwin \n Komplexes Modell: Edwin \n Shading: Edwin');
+
+
+    //displayText('t' + Math.round(timeInMilliseconds/1000) + '\n particle system');
+  } else if(timeInMilliseconds <= 21000) {
+    displayText('t '
+                + Math.round(timeInMilliseconds/1000)
+                + '\n Partikeleffekt: Lagerfeuer \n Billboarding: Partikel \n Lighting Lagerfeuer (fix) \n Materialien: Edwin (Chrome), Lagerfeuer (Individuell), Roboter (Obsidian), C-3PO (Gold), Boden (Dunkel) \n Texturen: Cube-texture auf Edwin und Roboter, 2D Textur auf dem Boden und den Partikeln \n Animation: Edwin, Roboter, Partikel\n Komplexes Modell: Edwin, Roboter \n Shading: Edwin, Roboter, C3-PO');
+  } else if(timeInMilliseconds <= 30000){
+    displayText('t' + Math.round(timeInMilliseconds/1000)
+  + '\nBillboarding: Wolke \n Lighting: Sonne (beweglich) \n Materialien: Edwin (Chrome), C-3PO (Gold), Boden (Dunkel) \n Texturen: Cube-texture auf Edwin, 2D Textur auf dem Boden und der Glasswand \n Animation: Edwin, Roboter, Partikel \n Komplexes Modell: Edwin \n Shading: Edwin, C3-PO \n Transparancy: Glasswand');
+} else {
+  displayText('t' + Math.round(timeInMilliseconds/1000));
+}
   // depending which timestamp is currently correct set startTime, endtime, startpoint and endpoint correctly
   if(timeInMilliseconds <= 8000) {
     startTime = timeInMilliseconds;
