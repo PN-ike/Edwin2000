@@ -15,10 +15,10 @@ function createEdwin(gl, resources) {
   // set edwins materials
   var edwinBaseNode = new MaterialSGNode();
 
-    edwinBaseNode.ambient = [0.24725, 0.1995, 0.0745, 1];
-    edwinBaseNode.diffuse = [0.75164, 0.60648, 0.22648, 1];
-    edwinBaseNode.specular = [0.628281, 0.555802, 0.366065, 1];
-    edwinBaseNode.shininess = 10;
+    edwinBaseNode.ambient = [0.25,	0.25,	0.25,	1];
+    edwinBaseNode.diffuse = [0.4,	0.4,	0.4,	1];
+    edwinBaseNode.specular = [0.774597,	0.774597,	0.774597,	1];
+    edwinBaseNode.shininess = 76.8;
 
   // set edwins texture
   var cubeNode = new CubeTextureSGNode(metalTexture, 4, new RenderSGNode(makeCube()));

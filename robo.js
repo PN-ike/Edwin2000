@@ -17,10 +17,11 @@ function createRobot(gl, resources) {
   // set robots materials
   var robotBaseNode = new  MaterialSGNode();
 
-  robotBaseNode.ambient = [0.24725, 0.1995, 0.0745, 1];
-  robotBaseNode.diffuse = [0.75164, 0.60648, 0.22648, 1];
-  robotBaseNode.specular = [0.628281, 0.555802, 0.366065, 1];
-  robotBaseNode.shininess = 4;
+  //obsidian
+  robotBaseNode.ambient = [0.05375,	0.05,	0.06625,	0.82];
+  robotBaseNode.diffuse = [0.18275,	0.17,	0.22525,	0.82];
+  robotBaseNode.specular = [0.332741,	0.328634,	0.346435,	0.82];
+  robotBaseNode.shininess = 38.4;
 
   // set robots texture
   var cubeTextureNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
