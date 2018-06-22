@@ -10,6 +10,7 @@ var lifeTime = new Array(nParticles);
 var particleX = new Array(nParticles);
 var particleY = new Array(nParticles);
 var particleZ = new Array(nParticles);
+var velocity = 0.05;
 
 
 function createParticleEffect() {
@@ -39,7 +40,7 @@ function animateParticleEffect() {
 
   for (let i = 0; i < nParticles; i++) {
     if (particleY[i] < lifeTime[i]) {
-      particleY[i] += 0.05;
+      particleY[i] += velocity;
     } else {
       particleY[i] = 0;
     }

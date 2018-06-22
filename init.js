@@ -17,7 +17,7 @@ function initInteraction(canvas) {
     }
     if(event.code === 'KeyA'){
       camera.moveLeft();
-  }
+    }
     if(event.code === 'KeyD'){
       camera.moveRight();
     }

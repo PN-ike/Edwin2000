@@ -5,7 +5,7 @@ var edwinZ = -20;
 
 var rotateYAx = 44.8;
 var rotateOZ = 0;
-var keyFrames;
+var edwinWayPoints;
 var position;
 var callCount = 0;
 //implements edwins layout, called once from init()
@@ -91,14 +91,14 @@ function createEdwin(gl, resources) {
   edwinTransformationNode.append(leftWingTransformationNode);
 
   // init key frames
-  keyFrames = createKeyFrames();
+  edwinWayPoints = generateEdwinWayPoints();
 
   return edwinBaseNode;
 
 }
 
 //implements movement of edwin, called for each frame from render()
-//TODO//turn of when working on the layout!!!
+// basically same as camera animation
 function animateEdwin (timeInMilliSeconds) {
   var startP;
   var destP;
@@ -109,48 +109,48 @@ function animateEdwin (timeInMilliSeconds) {
   var animationEnd = false;
 
   if(timeInMilliSeconds <= 3000) {
-    startP = keyFrames[0];
-    destP = keyFrames[1];
+    startP = edwinWayPoints[0];
+    destP = edwinWayPoints[1];
     startT = timeInMilliSeconds;
     destT = 3000;
 
   } else if(timeInMilliSeconds <= 8000) {
-    startP = keyFrames[1];
-    destP = keyFrames[2];
+    startP = edwinWayPoints[1];
+    destP = edwinWayPoints[2];
     startT = timeInMilliSeconds - 3000;
     destT = 8000 - 3000;
     rotate = true;
 
   } else if(timeInMilliSeconds <= 12000) {
-    startP = keyFrames[2];
-    destP = keyFrames[3];
+    startP = edwinWayPoints[2];
+    destP = edwinWayPoints[3];
     startT = timeInMilliSeconds - 8000;
     destT = 12000 - 8000;
     rotate = true;
 
   } else if(timeInMilliSeconds <= 17000) {
-    startP = keyFrames[3];
-    destP = keyFrames[4];
+    startP = edwinWayPoints[3];
+    destP = edwinWayPoints[4];
     startT = timeInMilliSeconds - 12000;
     destT = 17000 - 12000;
     rotate = true;
 
   } else if(timeInMilliSeconds <= 21000) {
-    startP = keyFrames[4];
-    destP = keyFrames[5];
+    startP = edwinWayPoints[4];
+    destP = edwinWayPoints[5];
     startT = timeInMilliSeconds - 17000;
     destT = 21000 - 17000;
     rotate = true;
 
   } else if(timeInMilliSeconds <= 28000) {
-    startP = keyFrames[5];
-    destP = keyFrames[6];
+    startP = edwinWayPoints[5];
+    destP = edwinWayPoints[6];
     startT = timeInMilliSeconds - 21000;
     destT = 28000 - 21000;
 
   } else if(timeInMilliSeconds <= 30000) {
-    startP = keyFrames[6];
-    destP = keyFrames[7];
+    startP = edwinWayPoints[6];
+    destP = edwinWayPoints[7];
     startT = timeInMilliSeconds - 28000;
     destT = 30000 - 28000;
 
@@ -163,8 +163,6 @@ function animateEdwin (timeInMilliSeconds) {
         let t = startT/destT;
         // clamp t
         t = Math.max(0, Math.min(1, t));
-
-        // TODO calc middle of startP and destP on 90° circle
 
         quat.slerp(position, startP, destP, t);
 
@@ -188,13 +186,14 @@ function animateEdwin (timeInMilliSeconds) {
       }
 }
 
-function createKeyFrames() {
-  // fly forward keyframes
+
+function generateEdwinWayPoints() {
+  // fly forward edwinWayPoints
   var t0 = quat.fromValues(edwinX, edwinY, edwinZ, 1);
   // 0, 5, 0
   var t3 = quat.fromValues(edwinX + 20, edwinY, edwinZ + 20, 1);
 
-  // fly circle keyframes
+  // fly circle edwinWayPoints
   var t8 = quat.fromValues(edwinX + 25, edwinY, edwinZ + 25, 1);
   var t12 = quat.fromValues(edwinX + 20, edwinY, edwinZ + 30, 1);
   var t17 = quat.fromValues(edwinX + 15, edwinY, edwinZ + 25, 1);

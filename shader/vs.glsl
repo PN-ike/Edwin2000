@@ -48,7 +48,8 @@ void main() {
 	}
 	// if called from a BillboardSGNode
 	if (u_billboardEnabled) {
-		//we use the camera translation part of the modelViewMatrix added with the vertex position to make the vertex dependent on the camera position
+		//we use the camera translation part of the modelViewMatrix added with the
+		// vertex position to make the vertex dependent on the camera position
 		gl_Position = u_projection * (u_modelView * vec4(0, 0, 0, 1) + vec4(a_position, 1));
 		return;
 	} else {

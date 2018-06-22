@@ -10,7 +10,6 @@ var context;
 //camera and projection settings
 var animatedAngle = 0;
 var fieldOfViewInRadians = convertDegreeToRadians(60);
-var cameraFlight = true;
 
 // root of the scenegraph
 var root;
@@ -34,8 +33,8 @@ var rotateLight2;
 loadResources({
   vs: 'shader/vs.glsl',
   fs: 'shader/fs.glsl',
-  vs_single: 'shader/single.vs.glsl', // TODO
-  fs_single: 'shader/single.fs.glsl',// TODO
+  vs_single: 'shader/single.vs.glsl',
+  fs_single: 'shader/single.fs.glsl',
   robotBodyTexture: 'models/robotBodyTexture.png',
   robotFaceTexture: 'models/robotFaceTexture.png',
   cloudTexture: 'models/cloud.png',
@@ -130,7 +129,7 @@ initInteraction(gl.canvas);
 }
 
 function createLightSphere(resources) {
-    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [ //TODO
+    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [
       new RenderSGNode(makeSphere(.2,10,10))
     ]);
   }
@@ -161,7 +160,7 @@ function render(timeInMilliseconds) {
   displayText(timeInMilliseconds);
   animateSun();
 
-  if(!camera.free && cameraFlight) { //TODO
+  if(!camera.free) {
     animateCamera(camera, timeInMilliseconds);
   }
 
