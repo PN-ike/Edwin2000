@@ -32,7 +32,7 @@ var bodyTransformationNode
 var rotateLight2;
 
 // variables for the particle effect
-var nParticles = 10;
+var nParticles = 200;
 
 var psTextureNode = new Array (nParticles);
 var psTransformationNode = new Array(nParticles);
@@ -59,7 +59,9 @@ loadResources({
   leftTexture: 'models/miramar_lf.jpg',
   rightTexture: 'models/miramar_rt.jpg',
   upTexture: 'models/miramar_up.jpg',
-  fireTexture: 'models/fireParticle2.png'
+  fireTexture: 'models/fireParticle2.png',
+  bonfireModel: 'models/bonfire.obj',
+  c3poModel: 'models/C-3PO.obj'
 
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
   init(resources);
@@ -151,19 +153,41 @@ function init(resources) {
   root.append(createGlassWall(resources));
   root.append(createClouds(resources));
 
+  let c3po = new MaterialSGNode([new RenderSGNode(resources.c3poModel)]);
+//gold
+c3po.ambient = [0.24725, 0.1995, 0.0745, 1];
+c3po.diffuse = [0.75164, 0.60648, 0.22648, 1];
+c3po.specular = [0.628281, 0.555802, 0.366065, 1];
+c3po.shininess = 0.4;
+
+let c3poNode = new TransformationSGNode(mat4.create(),
+[new TransformationSGNode(glm.translate(10, 1, 0),  [c3po])]);
+root.append(c3poNode);
+
+let bonfire = new MaterialSGNode([ new RenderSGNode(resources.bonfireModel) ]);
+
+bonfire.ambient = [1, 1, 1, 1];
+bonfire.diffuse = [1, 1, 1, 1];
+bonfire.specular = [0.3, 0.2, 0., 1];
+bonfire.shininess = 1;
+
+let bonfireNode = new TransformationSGNode(mat4.create(),
+  [
+    new TransformationSGNode(glm.transform({ translate: [0, 1, 0], scale: 0.5}), [bonfire])
+  ]);
+root.append(bonfireNode);
 
 
-    var i;
-    for (i = 0; i < nParticles; i++) {
+    for (let i = 0; i < nParticles; i++) {
 
-      lifeTime[i] = Math.random()*2;
+      lifeTime[i] = Math.random()*4;
       console.log(lifeTime[i]);
 
       psTextureNode[i] = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(fireTexture, 2,
-                  new RenderSGNode(makeRect(.02, .02))))));
+                  new RenderSGNode(makeRect(.05, .05))))));
 
       particleX[i] = 0 + (Math.random() -5)/10
-      particleY[i] = -1
+      particleY[i] = 0 + Math.random()/10;
       particleZ[i] = 0 + (Math.random()-5)/10
 
       console.log(particleX[i]);
@@ -225,7 +249,7 @@ function render(timeInMilliseconds) {
   }
 
   mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
-  mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(10, 12,0));
+  mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(20, 12,0));
 
   if(!camera.free && cameraFlight) { //TODO
     animateCamera(camera, timeInMilliseconds);

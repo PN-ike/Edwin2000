@@ -43,7 +43,7 @@ function createClouds(resources) {
 
       cloudBaseNode = new TransformationSGNode(mat4.create());
 
-      cloudBaseNode.append(createCloud(0, 20, 0));
+      cloudBaseNode.append(createCloud(5, 20, 0));
       cloudBaseNode.append(createCloud(15, 30, 0));
       cloudBaseNode.append(createCloud(-10, 20, 0));
       cloudBaseNode.append(createCloud(-5, 15, -30));

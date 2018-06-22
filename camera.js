@@ -4,7 +4,7 @@ class Camera {
 
   constructor() {
     this.position = vec3.fromValues(0, 7, 0);
-    this.viewDirection = vec3.fromValues(-1, 0, 0);
+    this.viewDirection = vec3.fromValues(-1, -1, -1);
 
     this.myUp = vec3.fromValues(0, 1, 0);
 
@@ -144,12 +144,19 @@ function animateCamera(camera, timeInMilliseconds) {
 
   } else if(timeInMilliseconds <= 21000) {
     startTime = timeInMilliseconds - 8000;
-    endTime = 21000;
+    endTime = 21000 - 8000;
     startPoint = wayPoints[1];
     endPoint = wayPoints[2];
     if(timeInMilliseconds >= 18000 && timeInMilliseconds <= 21000) {
       yDegreeOffset = timeInMilliseconds/100000;
     }
+
+  } else if(timeInMilliseconds <= 30000) {
+    startTime = timeInMilliseconds - 21000;
+    endTime = 30000 - 21000;
+    startPoint = wayPoints[2];
+    endPoint = wayPoints[3];
+
   } else {
     cameraAnimation = false;
   }
@@ -171,7 +178,7 @@ function generateWayPoints() {
   let t0 = vec3.fromValues(0, 20, 0);
   let t8 = vec3.fromValues(0, 10, 0);
   let t21 = vec3.fromValues(0, 20, 0);
-  let t30 = vec3.fromValues(5, 5, 10);
+  let t30 = vec3.fromValues(0, 25, 0);
 
   return [t0, t8, t21, t30];
 }
