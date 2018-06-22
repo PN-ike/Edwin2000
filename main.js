@@ -31,18 +31,6 @@ var robotTransformationNode;
 var bodyTransformationNode
 var rotateLight2;
 
-// variables for the particle effect
-var nParticles = 200;
-
-var psTextureNode = new Array (nParticles);
-var psTransformationNode = new Array(nParticles);
-
-var lifeTime = new Array(nParticles);
-
-var particleX = new Array(nParticles);
-var particleY = new Array(nParticles);
-var particleZ = new Array(nParticles);
-
 loadResources({
   vs: 'shader/vs.glsl',
   fs: 'shader/fs.glsl',
@@ -126,94 +114,17 @@ function init(resources) {
   //create scenegraph
   root =  new SGNode();
 
-  //TODO remove sun from sky
-    {
-      //initialize light
-      let light = new LightSGNode(); //use now framework implementation of light node
-
-      light.diffuse = [1, 0, 0, 1];
-      light.specular = [1, 0, 0, 1];
-      light.position = [0, 0, 0];
-
-      rotateLight = new TransformationSGNode(mat4.create());
-       let translateLight = new TransformationSGNode(glm.translate(0,-1,0)); //translating the light is the same as setting the light position
-
-      translateLight.append(light);
-      translateLight.append(createLightSphere(resources)); //add sphere for debugging: since we use 0,0,0 as our light position the sphere is at the same position as the light source
-      root.append(translateLight);
-    }
-
-
-  {
-    //TASK 5-1 create red light node at [2, 0.2, 0]
-    let light2 = new LightSGNode();
-    light2.uniform = 'u_light2';
-    light2.ambient = [0.8, 0.8, 0.8, 1];
-    light2.diffuse = [1, 1, 1, 1];
-    light2.specular = [1, 1, 1, 1];
-    light2.position = [2, -0.5, 0];
-    light2.append(createLightSphere(resources));
-    rotateLight2 = new TransformationSGNode(mat4.create(), [
-        light2
-    ]);
-
-    root.append(rotateLight2);
-  }
   root.append(createSky());
   root.append(createFloor(resources));
   root.append(createRobot(gl, resources));
   root.append(createEdwin(gl, resources));
   root.append(createGlassWall(resources));
   root.append(createClouds(resources));
-
-  let c3po = new MaterialSGNode([new RenderSGNode(resources.c3poModel)]);
-//gold
-c3po.ambient = [0.24725, 0.1995, 0.0745, 1];
-c3po.diffuse = [0.75164, 0.60648, 0.22648, 1];
-c3po.specular = [0.628281, 0.555802, 0.366065, 1];
-c3po.shininess = 0.4;
-
-let c3poNode = new TransformationSGNode(mat4.create(),
-[new TransformationSGNode(glm.translate(10, 1, 0),  [c3po])]);
-root.append(c3poNode);
-
-let bonfire = new MaterialSGNode([ new RenderSGNode(resources.bonfireModel) ]);
-
-bonfire.ambient = [1, 1, 1, 1];
-bonfire.diffuse = [1, 1, 1, 1];
-bonfire.specular = [0.3, 0.2, 0., 1];
-bonfire.shininess = 1;
-
-let bonfireNode = new TransformationSGNode(mat4.create(),
-  [
-    new TransformationSGNode(glm.transform({ translate: [0, 1, 0], scale: 0.5}), [bonfire])
-  ]);
-root.append(bonfireNode);
-
-
-    for (let i = 0; i < nParticles; i++) {
-
-      lifeTime[i] = Math.random()*4;
-      console.log(lifeTime[i]);
-
-      psTextureNode[i] = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(fireTexture, 2,
-                  new RenderSGNode(makeRect(.05, .05))))));
-
-      particleX[i] = 0 + (Math.random() -5)/10
-      particleY[i] = 0 + Math.random()/10;
-      particleZ[i] = 0 + (Math.random()-5)/10
-
-      console.log(particleX[i]);
-
-
-      psTransformationNode[i] = new TransformationSGNode(mat4.create(), [
-                  new TransformationSGNode(glm.transform({
-                    translate: [particleX[i], particleY[i], particleZ[i]]
-                  }),  [psTextureNode[i]])]);
-
-      root.append(psTransformationNode[i]);
-
-      }
+  root.append(createC3P0(resources));
+  root.append(createBonfire(resources));
+  root.append(createSun(resources));
+  root.append(createFireLight(resources));
+  createParticleEffect(root);
 
 initInteraction(gl.canvas);
 }
@@ -244,25 +155,11 @@ function render(timeInMilliseconds) {
 
   context = createSceneGraphContext(gl, shaderProgram);
 
+  animateParticleEffect();
   animateRobot(timeInMilliseconds);
   animateEdwin(timeInMilliseconds);
   displayText(timeInMilliseconds);
-
-  // particle system
-  for (let i = 0; i < nParticles; i++) {
-    if (particleY[i] < lifeTime[i]) {
-      particleY[i] += 0.003;
-    } else {
-      particleY[i] = 0;
-    }
-
-    psTransformationNode[i].matrix = glm.transform({
-      translate: [particleX[i], particleY[i], particleZ[i]]
-    });
-  }
-
-  mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
-  mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(20, 12,0));
+  animateSun();
 
   if(!camera.free && cameraFlight) { //TODO
     animateCamera(camera, timeInMilliseconds);

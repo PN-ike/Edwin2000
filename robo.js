@@ -6,8 +6,6 @@ var roboX = 0;
 var roboY = 0;
 var roboZ = 0;
 
-//TODO put particleFilter on bonfire
-//TODO evtl change particle size
 //TODO change materials
 //TODO spotlight
 

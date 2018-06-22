@@ -24,6 +24,80 @@ function createFloor(resources) {
   return floorBaseNode;
 
 }
+function createC3P0(resources) {
+
+        let c3po = new MaterialSGNode([new RenderSGNode(resources.c3poModel)]);
+
+        //gold
+        c3po.ambient = [0.24725, 0.1995, 0.0745, 1];
+        c3po.diffuse = [0.75164, 0.60648, 0.22648, 1];
+        c3po.specular = [0.628281, 0.555802, 0.366065, 1];
+        c3po.shininess = 0.4;
+
+        let c3poNode = new TransformationSGNode(mat4.create(),
+        [new TransformationSGNode(glm.translate(10, -1, 0),  [c3po])]);
+
+        return c3poNode;
+}
+
+function createBonfire(resources) {
+
+        let bonfire = new MaterialSGNode([ new RenderSGNode(resources.bonfireModel) ]);
+
+        bonfire.ambient = [1, 1, 1, 1];
+        bonfire.diffuse = [1, 1, 1, 1];
+        bonfire.specular = [0.3, 0.2, 0., 1];
+        bonfire.shininess = 1;
+
+        let bonfireNode = new TransformationSGNode(mat4.create(),
+          [
+            new TransformationSGNode(glm.transform({ translate: [-0.95, -0.8, -0.8], scale: 0.5}), [bonfire])
+          ]);
+
+        return bonfireNode;
+}
+
+function createSun(resources) {
+
+        let light2 = new LightSGNode();
+        light2.uniform = 'u_light2';
+        light2.ambient = [0.8, 0.8, 0.8, 1];
+        light2.diffuse = [1, 1, 1, 1];
+        light2.specular = [1, 1, 1, 1];
+        light2.position = [2, -0.5, 0];
+        light2.append(createLightSphere(resources));
+        rotateLight2 = new TransformationSGNode(mat4.create(), [
+            light2
+        ]);
+
+        return rotateLight2;
+}
+
+function animateSun() {
+        mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
+        mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(20, 12,0));
+}
+
+
+function createFireLight(resources) {
+
+        let light = new LightSGNode();
+
+        light.diffuse = [1, 0, 0, 1];
+        light.specular = [1, 0, 0, 1];
+        light.position = [-0.95, -0.8, -0.8];
+
+        let translateLight = new TransformationSGNode(glm.translate(-0.95, -0.8, -0.8));
+        translateLight.append(light);
+
+        return translateLight;
+}
+
+function createLightSphere(resources) {
+    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [ //TODO
+      new RenderSGNode(makeSphere(.2,10,10))
+    ]);
+}
 
 function createSky() {
 
