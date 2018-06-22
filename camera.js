@@ -3,9 +3,6 @@ var camera;
 class Camera {
 
   constructor() {
-    //this.position = vec3.fromValues(-2.65, 9, 40);
-    //this.viewDirection = vec3.fromValues(0.2672, -0.345, -0.89);
-
     this.position = vec3.fromValues(0, 7, 0);
     this.viewDirection = vec3.fromValues(-1, 0, 0);
 
@@ -27,7 +24,7 @@ class Camera {
     this.free = false;
 
   }
-
+    //compute upward movement
     moveUp() {
       if(!camera.free) {
         return;
@@ -39,7 +36,7 @@ class Camera {
 
       return;
     }
-
+    //compute down movement
     moveDown() {
       if(!camera.free) {
         return;
@@ -52,6 +49,7 @@ class Camera {
       return;
     }
 
+    //compute forward movement
     moveForward() {
       if(!camera.free) {
         return;
@@ -64,6 +62,7 @@ class Camera {
       return;
     }
 
+    //compute back movement
     moveBack() {
       if(!camera.free) {
         return;
@@ -76,6 +75,7 @@ class Camera {
       return;
     }
 
+    //compute left movement
     moveLeft() {
       if(!camera.free) {
         return;
@@ -91,6 +91,7 @@ class Camera {
       return;
     }
 
+    //compute right movement
     moveRight() {
       if(!camera.free) {
         return;
@@ -106,7 +107,7 @@ class Camera {
       return;
     }
 
-
+    //compute viewDirection
     updateViewDirection() {
 
           let rotateMatrix = mat4.multiply(mat4.create(),
@@ -119,6 +120,7 @@ class Camera {
     }
 }
 
+//TODO
 function animateCamera(camera, timeInMilliseconds) {
   let wayPoints = generateWayPoints();
   let startTime = undefined;

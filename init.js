@@ -43,7 +43,6 @@ function initInteraction(canvas) {
         const pos = toPos(event);
         const delta = { x : mouse.pos.x - pos.x, y: mouse.pos.y - pos.y };
         if (mouse.leftButtonDown && camera.free) {
-           //substract to get inverted movement
           camera.yDegree += delta.x*.25; // if we have a x-delta we want to rotate around y
           camera.xDegree += delta.y*.25; // multipy with 0.25 for pixel to Degree conversion
           camera.xDegree = Math.min(45, camera.xDegree);
@@ -67,28 +66,29 @@ function toPos(event) {
   };
 }
 
+
 function initTexture(texture)
 {
   //create texture object
   var tex = gl.createTexture();
-  //select a texture unit
+  //select texture unit
   gl.activeTexture(gl.TEXTURE0);
   //bind texture to active texture unit
   gl.bindTexture(gl.TEXTURE_2D, tex);
   //set sampling parameters
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  //TASK 4: change texture sampling behaviour
+  //set sampling behaviour
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   //upload texture data
   gl.texImage2D(gl.TEXTURE_2D, //texture unit target == texture type
-    0, //level of detail level (default 0)
+    0, //level of detail level
     gl.RGBA, //internal format of the data in memory
-    gl.RGBA, //image format (should match internal format)
+    gl.RGBA, //image format
     gl.UNSIGNED_BYTE, //image data type
     texture); //actual image data
-  //clean up/unbind texture
+  //unbind texture
   gl.bindTexture(gl.TEXTURE_2D, null);
 
   return tex;
@@ -97,9 +97,9 @@ function initTexture(texture)
 function initCubeTexture(textures) {
   //create the texture
   var cubeTexture = gl.createTexture();
-  //define some texture unit we want to work on
+  //define texture unit
   gl.activeTexture(gl.TEXTURE0);
-  //bind the texture to the texture unit
+  //bind the texture
   gl.bindTexture(gl.TEXTURE_CUBE_MAP, cubeTexture);
   //set sampling parameters
   gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -107,8 +107,9 @@ function initCubeTexture(textures) {
   //gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.MIRRORED_REPEAT); //will be available in WebGL 2
   gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
   //set correct image for each side of the cube map
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);//flipping required for our skybox, otherwise images don't fit together
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
   gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[0]);
   gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[1]);
   gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[2]);
@@ -116,8 +117,9 @@ function initCubeTexture(textures) {
   gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[4]);
   gl.texImage2D(gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[5]);
   //generate mipmaps (optional)
-  gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-  //unbind the texture again
+  //gl.generateMipmap(gl.TEXTURE_CUBE_MAP); //TODO
+
+  //unbind texture
   gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 
   return cubeTexture;
@@ -128,125 +130,139 @@ function makeCube() {
   var s = 0.3;
 
    var position =
-   [-s, s, -s,
+   [
+     //top
+     -s, s, -s,
 		-s, s, s,
 		s, s, s,
 		s, s, -s,
 
-		// Left
+		// left
 		-s, s, s,
 		-s, -s, s,
 		-s, -s, -s,
 		-s, s, -s,
 
-		// Right
+		// right
 		s, s, s,
 		s, -s, s,
 		s, -s, -s,
 		s, s, -s,
 
-		// Front
+		// front
 		s, s, s,
 		s, -s, s,
 		-s, -s, s,
 		-s, s, s,
 
-		// Back
+		// back
 		s, s, -s,
 		s, -s, -s,
 		-s, -s, -s,
 		-s, s, -s,
 
-		// Bottom
+		// bottom
 		-s, -s, -s,
 		-s, -s, s,
 		s, -s, s,
 		s, -s, -s];
 
    var normal = [
+     //top
      0, 1, 0,
      0, 1, 0,
      0, 1, 0,
      0, 1, 0,
 
+     //left
      -1, 0, 0,
      -1, 0, 0,
      -1, 0, 0,
      -1, 0, 0,
 
+     //right
      1, 0, 0,
      1, 0, 0,
      1, 0, 0,
      1, 0, 0,
 
+     //front
      0, 0, -1,
      0, 0, -1,
      0, 0, -1,
      0, 0, -1,
 
+     //back
      0, 0, 1,
      0, 0, 1,
      0, 0, 1,
      0, 0, 1,
 
+     //bottom
      0, -1, 0,
      0, -1, 0,
      0, -1, 0,
      0, -1, 0
    ];
    var texture = [
+     //top
      0, 0,
      0, 1,
      1, 1,
      1, 0,
 
+     //left
      0, 0,
      1, 0,
      1, 1,
      0, 1,
 
+     //right
      1, 1,
      0, 1,
      0, 0,
      1, 0,
 
+     //front
      1, 1,
      1, 0,
      0, 0,
      0, 1,
 
+     //back
      0, 0,
      0, 1,
      1, 1,
      1, 0,
 
+     //bottom
      1, 1,
      1, 0,
      0, 0,
      0, 1
  ];
    var index = [
-		// Top
+		// top
 		0, 1, 2,
 		0, 2, 3,
 
-		// Left
+		// left
 		5, 4, 6,
 		6, 4, 7,
 
-		// Right
+		// right
 		8, 9, 10,
 		8, 10, 11,
 
-		// Front
+		// front
 		13, 12, 14,
 		15, 14, 12,
 
-		// Back
+		// back
 		16, 17, 18,
 		16, 18, 19,
 
-		// Bottom
+		// bottom
 		21, 20, 22,
 		22, 20, 23
 	];

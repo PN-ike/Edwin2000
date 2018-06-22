@@ -12,14 +12,18 @@ var callCount = 0;
 
 function createEdwin(gl, resources) {
 
+  // set edwins materials
   var edwinBaseNode = new MaterialSGNode();
 
     edwinBaseNode.ambient = [0.24725, 0.1995, 0.0745, 1];
     edwinBaseNode.diffuse = [0.75164, 0.60648, 0.22648, 1];
     edwinBaseNode.specular = [0.628281, 0.555802, 0.366065, 1];
     edwinBaseNode.shininess = 10;
+
+  // set edwins texture
   var cubeNode = new CubeTextureSGNode(robotBodyTexture, 4, new RenderSGNode(makeCube()));
 
+  // set edwins starting position
   edwinTransformationNode = new TransformationSGNode(mat4.create(), [
               new TransformationSGNode(glm.transform({
                 translate: [edwinX, edwinY, edwinZ],
@@ -27,6 +31,7 @@ function createEdwin(gl, resources) {
 
   edwinBaseNode.append(edwinTransformationNode);
 
+  //create body
   var bodyTransformationNode = new TransformationSGNode(mat4.create(), [
               new TransformationSGNode(glm.transform({
                 scale: [1,0.8, 5.0]}),  [
@@ -35,6 +40,7 @@ function createEdwin(gl, resources) {
 
   edwinTransformationNode.append(bodyTransformationNode);
 
+  // create left back wing
   var leftBackWingTransformationMatrix = mat4.create();
   mat4.mul(leftBackWingTransformationMatrix, leftBackWingTransformationMatrix,makeYRotationMatrix(convertDegreeToRadians(90)));
   mat4.mul(leftBackWingTransformationMatrix, leftBackWingTransformationMatrix,makeZShearMatrix(0.5, 0))
@@ -44,6 +50,7 @@ function createEdwin(gl, resources) {
   var leftBackWingTransformationNode =  new TransformationSGNode(leftBackWingTransformationMatrix, cubeNode);
   edwinTransformationNode.append(leftBackWingTransformationNode);
 
+    // create right back wing
   var rightBackWingTransformationMatrix = mat4.create();
   mat4.mul(rightBackWingTransformationMatrix, rightBackWingTransformationMatrix,makeYRotationMatrix(convertDegreeToRadians(90)));
   mat4.mul(rightBackWingTransformationMatrix, rightBackWingTransformationMatrix,makeZShearMatrix(-0.5, 0))
@@ -53,7 +60,7 @@ function createEdwin(gl, resources) {
   var rightBackWingTransformationNode =  new TransformationSGNode(rightBackWingTransformationMatrix, cubeNode);
   edwinTransformationNode.append(rightBackWingTransformationNode);
 
-  // top finn
+  // create top finn
   var finnTransformationMatrix = mat4.create();
   mat4.mul(finnTransformationMatrix, finnTransformationMatrix,makeYRotationMatrix(convertDegreeToRadians(90)));
   mat4.mul(finnTransformationMatrix, finnTransformationMatrix,makeXRotationMatrix(convertDegreeToRadians(90)));
@@ -63,6 +70,7 @@ function createEdwin(gl, resources) {
   var finnTransformationNode =  new TransformationSGNode(finnTransformationMatrix, cubeNode);
   edwinTransformationNode.append(finnTransformationNode);
 
+  //create right wing
   var rightWingTransformationMatrix = mat4.create();
   mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeYRotationMatrix(convertDegreeToRadians(90)));
   mat4.mul(rightWingTransformationMatrix, rightWingTransformationMatrix, makeZShearMatrix(0.5, 0));
@@ -72,6 +80,7 @@ function createEdwin(gl, resources) {
   var rightWingTransformationNode =  new TransformationSGNode(rightWingTransformationMatrix, cubeNode);
   edwinTransformationNode.append(rightWingTransformationNode);
 
+  //create left Wing
   var leftWingTransformationMatrix = mat4.create();
   mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeYRotationMatrix(convertDegreeToRadians(90)));
   mat4.mul(leftWingTransformationMatrix, leftWingTransformationMatrix, makeZShearMatrix(-0.5, 0));
@@ -89,7 +98,7 @@ function createEdwin(gl, resources) {
 }
 
 //implements movement of edwin, called for each frame from render()
-//turn of when working on the layout!!!
+//TODO//turn of when working on the layout!!!
 function animateEdwin (timeInMilliSeconds) {
   var startP;
   var destP;

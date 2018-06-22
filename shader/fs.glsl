@@ -14,6 +14,26 @@ struct Light {
 	vec4 specular;
 };
 
+//texture related variables
+uniform bool u_transparent;
+uniform bool u_enableObjectTexture;
+uniform bool u_enableCubeTexture;
+
+uniform sampler2D u_tex;
+uniform samplerCube u_texCube;
+
+varying vec2 v_texCoord;
+varying vec3 v_position;
+
+//lighting related variables
+uniform Material u_material;
+uniform Light u_light;
+uniform Light u_light2;
+
+varying vec3 v_normalVec;
+varying vec3 v_eyeVec;
+varying vec3 v_lightVec;
+varying vec3 v_light2Vec;
 
 vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, vec3 normalVec, vec3 eyeVec, vec4 textureColor) {
 	lightVec = normalize(lightVec);
@@ -27,12 +47,11 @@ vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, ve
 	vec3 reflectVec = reflect(-lightVec,normalVec);
 	float spec = pow( max( dot(reflectVec, eyeVec), 0.0) , material.shininess);
 
-  //TASK 2: replace diffuse and ambient material color with texture color
   material.diffuse = textureColor;
   material.ambient = textureColor;
-	//Note: an alternative to replacing the material color is to multiply it with the texture color
 
 
+	// compute ambient, diffuse, specular and emission
 	vec4 c_amb  = clamp(light.ambient * material.ambient, 0.0, 1.0);
 	vec4 c_diff = clamp(diffuse * light.diffuse * material.diffuse, 0.0, 1.0);
 	vec4 c_spec = clamp(spec * light.specular * material.specular, 0.0, 1.0);
@@ -40,29 +59,6 @@ vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, ve
 
   return  c_amb + c_diff + c_spec + c_em;
 }
-//texture related variables
-uniform bool u_transparent;
-uniform bool u_enableObjectTexture;
-uniform bool u_enableCubeTexture;
-
-varying vec2 v_texCoord;
-uniform sampler2D u_tex;
-
-uniform samplerCube u_texCube;
-
-varying vec3 v_position;
-
-uniform Light u_light;
-uniform Light u_light2;
-
-
-//varying vectors for light computation
-varying vec3 v_normalVec;
-varying vec3 v_eyeVec;
-varying vec3 v_lightVec;
-varying vec3 v_light2Vec;
-
-uniform Material u_material;
 
 void main (void) {
 
@@ -79,6 +75,7 @@ void main (void) {
     textureColor =  texture2D(u_tex, v_texCoord);
   }
 
+	// if called from a TransparentSGNode return the texture Color otherwise the Phong Shading calculation
 	if (!u_transparent) {
 		gl_FragColor =	calculateSimplePointLight(u_light, u_material, v_lightVec, v_normalVec, v_eyeVec, textureColor) +
 		calculateSimplePointLight(u_light2, u_material, v_light2Vec, v_normalVec, v_eyeVec, textureColor);

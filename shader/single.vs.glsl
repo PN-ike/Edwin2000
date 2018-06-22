@@ -1,6 +1,3 @@
-/**
- * Created by Samuel Gratzl on 29.02.2016.
- */
 attribute vec3 a_position;
 
 uniform mat4 u_modelView;

@@ -83,13 +83,7 @@ function createGlassWall(resources) {
     return wallBaseNode;
 }
 
-/**
- * returns a new rendering context
- * @param gl the gl context
- * @param projectionMatrix optional projection Matrix
- * @returns {ISceneGraphContext}
- */
-
+// returns a new rendering context
 
 function createSceneGraphContext(gl, shader) {
 
@@ -126,6 +120,7 @@ class BillboardSGNode extends SGNode {
   }
 }
 
+// a node to tell the fragment shader to return the texture color
 class TransparentSGNode extends SGNode {
   constructor(children) {
       super(children);
@@ -133,13 +128,13 @@ class TransparentSGNode extends SGNode {
 
   render(context)
   {
-    //enable billboarding in shader
+    //enable transparent boolean in shader
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_transparent'), 1);
 
     //render children
     super.render(context);
 
-    //disable billboarding in shader
+    //disable  transparent boolean in shader
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_transparent'), 0);
   }
 }
@@ -185,14 +180,13 @@ class TextureSGNode extends SGNode {
 
   render(context)
   {
-    //tell shader to use our texture; alternatively we could use two phong shaders: one with and one without texturing support
+    //tell shader to use our texture
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_enableObjectTexture'), 1);
 
-
-    //set additional shader parameters
+    //set shader parameters
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_tex'), this.textureunit);
 
-    //activate/select texture unit and bind texture
+    //activate texture unit and bind texture
     gl.activeTexture(gl.TEXTURE0 + this.textureunit);
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
 
@@ -219,6 +213,7 @@ class CubeTextureSGNode extends SGNode {
 
   render(context)
   {
+    // tell the shader to enable cube texturing
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_enableCubeTexture'), 1);
     gl.uniform1i(gl.getUniformLocation(context.shader, 'u_texCube'), this.textureunit);
 

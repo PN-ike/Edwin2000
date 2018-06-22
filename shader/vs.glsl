@@ -2,7 +2,6 @@
 
 attribute vec3 a_position;
 attribute vec3 a_normal;
-//given texture coordinates per vertex
 attribute vec2 a_texCoord;
 
 uniform mat4 u_modelView;
@@ -28,27 +27,31 @@ varying vec3 v_position;
 
 
 void main() {
+
 		vec4 eyePosition = u_modelView * vec4(a_position,1);
 
+		// output for phong shading
 		v_normalVec = u_normalMatrix * a_normal;
 	  v_eyeVec = -eyePosition.xyz;
 		v_lightVec = u_lightPos - eyePosition.xyz;
 		v_light2Vec = u_light2Pos - eyePosition.xyz;
 
+
+	// if called from a CubeTextureSGNode
 	if (u_enableCubeTexture) {
 		v_position = a_position;
 	}
 
+	// if called from a TextureSGNode
 	if (u_enableObjectTexture) {
 		v_texCoord = a_texCoord;
 	}
-
+	// if called from a BillboardSGNode
 	if (u_billboardEnabled) {
 		//modify the position so that it depends on 	the camera position
 		gl_Position = u_projection * (u_modelView * vec4(0, 0, 0, 1) + vec4(a_position, 1));
 		return;
 	} else {
-
 		gl_Position = u_projection * u_modelView * vec4(a_position,1);
 	}
 }

@@ -1,38 +1,37 @@
-//the OpenGL context
 var gl = null;
-//our shader program
 var shaderProgram = null;
-
 var canvasWidth = 2000;
 var canvasHeight = 1200;
 var aspectRatio = canvasWidth / canvasHeight;
 var near = 1;
 var far = 150;
-
-//rendering context
 var context;
-var circleCount = 0;
+
 //camera and projection settings
 var animatedAngle = 0;
 var fieldOfViewInRadians = convertDegreeToRadians(60);
+var cameraFlight = true;
 
-var textureVertexShader;
-var textureFragmentShader;
-var rotateLight2;
+// root of the scenegraph
+var root;
+
+//var textureVertexShader;
+//var textureFragmentShader;
+// texture variables
 var robotHeadTexture;
 var robotBodyTexture;
 var cloudTexture;
 var floorTexture;
 var skyTexture;
-
-var root;
-var robotTransformationNode;
-var bodyTransformationNode
-
-var cameraFlight = true;
-
 var fireTexture;
 
+// variables for animation
+var circleCount = 0;
+var robotTransformationNode;
+var bodyTransformationNode
+var rotateLight2;
+
+// variables for the particle effect
 var nParticles = 10;
 
 var psTextureNode = new Array (nParticles);
@@ -47,8 +46,8 @@ var particleZ = new Array(nParticles);
 loadResources({
   vs: 'shader/vs.glsl',
   fs: 'shader/fs.glsl',
-  vs_single: 'shader/single.vs.glsl',
-  fs_single: 'shader/single.fs.glsl',
+  vs_single: 'shader/single.vs.glsl', // TODO
+  fs_single: 'shader/single.fs.glsl',// TODO
   robotBodyTexture: 'models/robotBodyTexture.png',
   robotFaceTexture: 'models/robotFaceTexture.png',
   cloudTexture: 'models/cloud.png',
@@ -69,20 +68,18 @@ loadResources({
   render();
 });
 
-/**
- * initializes OpenGL context, compile shader, and load buffers
- */
 function init(resources) {
 
   //create a GL context
   gl = createContext(canvasWidth, canvasHeight);
 
-  //in WebGL / OpenGL3 we have to create and use our own shaders for the programmable pipeline
   //create the shader program
   shaderProgram = createProgram(gl, resources.vs, resources.fs);
 
+  //create our camera
   camera = new Camera();
 
+  // initialize our textures
   cloudTexture = initTexture(resources.cloudTexture);
   floorTexture = initTexture(resources.floorTexture);
   windowTexture = initTexture(resources.windowTexture);
@@ -165,14 +162,6 @@ function init(resources) {
       psTextureNode[i] = new TransparentSGNode(new MaterialSGNode(new BillboardSGNode(new TextureSGNode(fireTexture, 2,
                   new RenderSGNode(makeRect(.02, .02))))));
 
-      //let transparentSGNode = new TransparentSGNode()
-      //let psBillboardNode = new BillboardSGNode();
-      //psTextureNode[i] = new TextureSGNode(fireTexture, 2, new RenderSGNode(makeRect(.005, .005)));
-
-      //psBillboardNode.append(transparentSGNode);
-      //transparentSGNode.append(psTextureNode[i]);
-
-
       particleX[i] = 0 + (Math.random() -5)/10
       particleY[i] = -1
       particleZ[i] = 0 + (Math.random()-5)/10
@@ -193,7 +182,7 @@ initInteraction(gl.canvas);
 }
 
 function createLightSphere(resources) {
-    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [
+    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [ //TODO
       new RenderSGNode(makeSphere(.2,10,10))
     ]);
   }
@@ -202,7 +191,7 @@ function createLightSphere(resources) {
  */
 function render(timeInMilliseconds) {
 
-  //set background color to light gray
+  //set background color
   gl.clearColor(0.6, 0.9, 0.9, 1.0);
   //clear the buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -235,17 +224,14 @@ function render(timeInMilliseconds) {
     });
   }
 
-
   mat4.multiply(rotateLight2.matrix, mat4.create(), glm.rotateY(circleCount/2));
   mat4.multiply(rotateLight2.matrix, rotateLight2.matrix, glm.translate(10, 12,0));
 
-  if(!camera.free && cameraFlight) {
+  if(!camera.free && cameraFlight) { //TODO
     animateCamera(camera, timeInMilliseconds);
   }
 
-  if (camera.free) {
-      camera.updateViewDirection();
-  }
+  camera.updateViewDirection();
 
   root.render(context);
 
@@ -256,18 +242,13 @@ function render(timeInMilliseconds) {
   animatedAngle = timeInMilliseconds/10;
 }
 
+// compute the modelViewMatrix and pass it to the shaders
 function setUpModelViewMatrix(sceneMatrix, viewMatrix) {
   var modelViewMatrix = mat4.multiply(mat4.create(), viewMatrix, sceneMatrix);
   gl.uniformMatrix4fv(gl.getUniformLocation(context.shader, 'u_modelView'), false, modelViewMatrix);
 }
 
 function calculateViewMatrix() {
-
-  if (camera.free) {
     viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
-  } else {
-    //viewMatrix = mat4.lookAt(mat4.create(), camera.position, camera.viewDirection, camera.myUp);
-    viewMatrix = mat4.lookAt(mat4.create(), camera.position, vec3.add(vec3.create(), camera.position, camera.viewDirection), camera.myUp);
-  }
   return viewMatrix;
 }
