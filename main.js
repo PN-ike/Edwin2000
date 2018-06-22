@@ -15,8 +15,6 @@ var cameraFlight = true;
 // root of the scenegraph
 var root;
 
-//var textureVertexShader;
-//var textureFragmentShader;
 // texture variables
 var robotHeadTexture;
 var robotBodyTexture;
