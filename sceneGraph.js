@@ -94,7 +94,7 @@ function createFireLight(resources) {
 }
 
 function createLightSphere(resources) {
-    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [ //TODO
+    return new ShaderSGNode(createProgram(gl, resources.vs_single, resources.fs_single), [
       new RenderSGNode(makeSphere(.2,10,10))
     ]);
 }
@@ -141,7 +141,6 @@ function createCloud(x, y, z, texture) {
 function createGlassWall(resources) {
 
     var wallBaseNode = new  MaterialSGNode();
-    //TODO define Material
 
     var rectangleNode =new TransparentSGNode( new TextureSGNode(windowTexture, 2, new RenderSGNode(makeRect(0.3, 0.3))));
 

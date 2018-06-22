@@ -6,10 +6,6 @@ var roboX = 0;
 var roboY = 0;
 var roboZ = 0;
 
-//TODO change materials
-//TODO spotlight
-
-
 //implements robos layout, called once from init()
 
 function createRobot(gl, resources) {
